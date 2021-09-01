@@ -1,0 +1,54 @@
+{
+  "remote": "9-key",
+  "0xFF629D": {
+    "label": "Power",
+    "rpt": true,
+    "cmd": "T=2"
+  },
+  "0xFF22DD": {
+    "label": "DIY1",
+    "cmd": "!presetFallback",
+    "PL": 1,
+    "FX": 110,
+    "FP": 6
+  },
+  "0xFF02FD": {
+    "label": "DIY2",
+    "cmd": "!presetFallback",
+    "PL": 2,
+    "FX": 38,
+    "FP": 55
+  },
+  "0xFFC23D": {
+    "label": "DIY3",
+    "cmd": "!presetFallback",
+    "PL": 3,
+    "FX": 67,
+    "FP": 28
+  },
+  "0xFF30CF": {
+    "label": "Left",
+    "cmnt": "Speed -",
+    "cmd": "SI=~-16"
+  },
+  "0xFF7A85": {
+    "label": "Right",
+    "cmnt": "Speed +",
+    "cmd": "SI=~16"
+  },
+  "0xFF9867": {
+    "label": "Up",
+    "cmnt": "Bright +",
+    "cmd": "!incBrightness"
+  },
+  "0xFF38C7": {
+    "label": "Down",
+    "cmnt": "Bright -",
+    "cmd": "!decBrightness"
+  },
+  "0xFF18E7": {
+    "label": "Select",
+    "cmnt": "Cycle effects",
+    "cmd": "FX=~"
+  }
+}

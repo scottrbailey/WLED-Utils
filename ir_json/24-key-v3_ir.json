@@ -1,0 +1,145 @@
+{
+  "remote": "24-key-v3",
+  "0xF700FF": {
+    "label": "Speed +",
+    "cmd": "SX=~16"
+  },
+  "0xF7807F": {
+    "label": "Speed -",
+    "cmd": "SX=~-16"
+  },
+  "0xF740BF": {
+    "label": "On/Off",
+    "cmd": "T=2"
+  },
+  "0xF7C03F": {
+    "label": "W",
+    "cmnt": "Palette+",
+    "cmd": "FP=~"
+  },
+  "0xF720DF": {
+    "label": "Red",
+    "cmnt": "Lava",
+    "cmd": "FP=8&CL=hFF0000&C2=hFF7F00&C3=hCC3D60"
+  },
+  "0xF7A05F": {
+    "label": "Green",
+    "cmnt": "Forest",
+    "cmd": "FP=10&CL=h008000&C2=h008040&C3=h30661E"
+  },
+  "0xF7609F": {
+    "label": "Blue",
+    "cmnt": "Icefire",
+    "cmd": "FP=36&CL=h0000FF&C2=h7F00FF&C3=h3D60CC"
+  },
+  "0xF7E01F": {
+    "label": "Bright -",
+    "cmd": "!decBrightness"
+  },
+  "0xF710EF": {
+    "label": "Timer1H",
+    "cmnt": "Timer 60 min",
+    "cmd": "NL=60&NT=0"
+  },
+  "0xF7906F": {
+    "label": "Timer4H",
+    "cmnt": "Timer 30 min",
+    "cmd": "NL=30&NT=0"
+  },
+  "0xF750AF": {
+    "label": "Timer8H",
+    "cmnt": "Timer 15 min",
+    "cmd": "NL=15&NT=0"
+  },
+  "0xF7D02F": {
+    "label": "Bright128",
+    "cmnt": "Bright 128",
+    "cmd": "A=128"
+  },
+  "0xF730CF": {
+    "label": "Music1",
+    "cmnt": "Cycle FX +",
+    "cmd": "FX=~"
+  },
+  "0xF7B04F": {
+    "label": "Music2",
+    "cmnt": "Cycle FX -",
+    "cmd": "FX=~-"
+  },
+  "0xF7708F": {
+    "label": "Music3",
+    "cmnt": "Reset FX and FP",
+    "cmd": "FX=1&PF=6"
+  },
+  "0xF7F00F": {
+    "label": "Bright+",
+    "cmnt": "Bright +",
+    "cmd": "!incBrightness"
+  },
+  "0xF708F7": {
+    "label": "DIY1",
+    "cmnt": "Preset 1",
+    "cmd": "!presetFallback",
+    "PL": 1,
+    "FX": 110,
+    "FP": 6
+  },
+  "0xF78877": {
+    "label": "DIY2",
+    "cmnt": "Preset 2",
+    "cmd": "!presetFallback",
+    "PL": 2,
+    "FX": 38,
+    "FP": 55
+  },
+  "0xF748B7": {
+    "label": "DIY3",
+    "cmnt": "Preset 3",
+    "cmd": "!presetFallback",
+    "PL": 3,
+    "FX": 67,
+    "FP": 28
+  },
+  "0xF7C837": {
+    "label": "Intensity +",
+    "cmd": "IX=~16"
+  },
+  "0xF728D7": {
+    "label": "DIY4",
+    "cmnt": "Preset 4",
+    "cmd": "!presetFallback",
+    "PL": 4,
+    "FX": 72,
+    "FP": 44
+  },
+  "0xF7A857": {
+    "label": "DIY5",
+    "cmnt": "Preset 5",
+    "cmd": "!presetFallback",
+    "PL": 5,
+    "FX": 87,
+    "FP": 27
+  },
+  "0xF76897": {
+    "label": "Auto",
+    "cmnt": "Edit Me!",
+    "cmd": {
+      "playlist": {
+        "ps": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "dur": 1800,
+        "transition": 7,
+        "repeat": 0
+      }
+    }
+  },
+  "0xF7E817": {
+    "label": "Intensity -",
+    "cmd": "IX=~-16"
+  }
+}

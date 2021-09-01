@@ -51,11 +51,11 @@ def render_effect(fx=0):
         time.sleep(0.02)
         frames.append(draw_frame())
     frame_one = frames[0]
-    frame_one.save(f'gifs/FX_{fx:02d}.gif', format="GIF", append_images=frames,
+    frame_one.save(f'gifs/FX_{fx:03d}.gif', format="GIF", append_images=frames,
                    save_all=True, duration=60, loop=0)
 
 def render_all_effects():
-    for i in range(len(node_info['effects'])):
+    for i in range(0, len(node_info['effects'])):
         print(f'rendering {node_info["effects"][i]}')
         render_effect(i)
 

@@ -2,6 +2,17 @@ import colors
 import math
 
 
+def split_rgb(col):
+    r = (col & (255 << 16)) >> 16
+    g = (col & (255 << 8)) >> 8
+    b = col & 255
+    return r, g, b
+
+
+def to_hex(r, g, b):
+    return f'{r:02X}{g:02X}{b:02X}'
+
+
 def color_distance(c1, c2):
     r1 = (c1 & 255 << 16) >> 16
     r2 = (c2 & 255 << 16) >> 16

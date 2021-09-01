@@ -20,6 +20,7 @@ import json
 import openpyxl
 import re
 from colors import named_colors, palettes
+from color_utils import split_rgb
 
 SEC_SHIFT_DEG = 30
 TERT_SHIFT_DEG = -15
@@ -55,17 +56,6 @@ def_palettes = {"red": 8, "orangered": "Sakura", "pink": "Pink Candy",
                 "aqua": "Ocean", "cyan": "Beech", "darkcyan": "Hult 64", "turquoise": "Toxy Reaf",
                 "blue": "Icefire", "skyblue": "Breeze", "darkblue":  "Semi Blue",
                 "plum": "Magenta", "magenta": "Magred"}
-
-
-def split_rgb(col):
-    r = (col & (255 << 16)) >> 16
-    g = (col & (255 << 8)) >> 8
-    b = col & 255
-    return r, g, b
-
-
-def to_hex(r, g, b):
-    return f'{r:02X}{g:02X}{b:02X}'
 
 
 def shift_color(col, shift, sat=1.0, val=1.0):
@@ -181,7 +171,6 @@ def parse_sheet(ws):
 
 if __name__ == '__main__':
     wb = openpyxl.load_workbook('IR_Remote_Codes.xlsx')
-    # wb = openpyxl.load_workbook('test_ir.xlsx')
     
     for sheet in wb.worksheets:
         parse_sheet(sheet)

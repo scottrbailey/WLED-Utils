@@ -54,12 +54,12 @@ def render_palette(fp=0):
     print(f'rendering palette {fp} {palettes[fp]}')
     time.sleep(0.3)
     frames = []
-    for number in range(LED_COLS * LED_ROWS):
+    for number in range(80):
         time.sleep(0.02)
         frames.append(draw_frame())
     frame_one = frames[0]
     frame_one.save(f'gifs/PAL_{fp:02d}.gif', format="GIF", append_images=frames,
-                   save_all=True, duration=100, loop=0, quality=10)
+                   save_all=True, duration=30, loop=0, quality=10)
 
 
 def render_effect(fx=0, fp=None):
@@ -68,13 +68,13 @@ def render_effect(fx=0, fp=None):
         # use fire palette for fire 2012 effect
         fp = EFFECT_PALETTE if fx != 66 else 35
     # long periods where these effects do nothing - so speed up and capture longer
-    slow_effects = [4, 5, 23, 24, 32, 36, 58, 62, 82, 90]
+    slow_effects = [4, 5, 23, 24, 25, 32, 36, 58, 62, 82, 90]
     if fx in slow_effects:
         sx = 255
-        frame_cnt = 200
+        frame_cnt = 120
     else:
         sx = 127
-        frame_cnt = 100
+        frame_cnt = 80
     req = requests.get(f'http://{NODE_IP}/win&FX={fx}&FP={fp}&SX={sx}&TT=0&CL=h{color_1}&C2=h{color_2}&C3={color_3}')
     print(f'rendering effect {fx} {effects[fx]}')
     time.sleep(0.3)
@@ -84,7 +84,7 @@ def render_effect(fx=0, fp=None):
         frames.append(draw_frame())
     frame_one = frames[0]
     frame_one.save(f'gifs/FX_{fx:03d}.gif', format="GIF", append_images=frames,
-                   save_all=True, duration=20, loop=0, quality=10)
+                   save_all=True, duration=30, loop=0, quality=10)
 
 
 def render_all_effects():

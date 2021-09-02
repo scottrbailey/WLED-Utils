@@ -1,3 +1,7 @@
+"""
+This is a work in progress and doesn't currently work.
+"""
+
 import json
 import requests
 import websocket

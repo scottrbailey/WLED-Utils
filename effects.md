@@ -1,8 +1,12 @@
 ### Effects
 To aid in showing where colors vs palettes are used, all effects are rendered with the _Party_ palette  
-and these colors: primary <span style="background-color:#FF6E41; padding:5px; border-radius: 10px">FF6E41</span>, secondary <span style="background-color:#FFE369; padding:5px; border-radius: 10px">FFE369</span>,  and tertiary <span style="background-color:#FFB9B8; padding:5px; border-radius: 10px">FFB9B8</span>
-| ID | Effect | New Vis | Old Vis 
-| ---: | --- | --- | ---
+and the colors
+![](gifs/color_1.gif) primary
+![](gifs/color_2.gif) secondary
+![](gifs/color_3.gif) tertiary colors
+
+| ID | Effect | New Visual | Old Visual 
+| ---: | --- | --- | --- 
 | 0 | Solid | ![](gifs/FX_000.gif) | ![](https://raw.githubusercontent.com/photocromax/WLED-live-visualizations/master/GIF//FX_0.gif)
 | 1 | Blink | ![](gifs/FX_001.gif) | ![](https://raw.githubusercontent.com/photocromax/WLED-live-visualizations/master/GIF//FX_1.gif)
 | 2 | Breathe | ![](gifs/FX_002.gif) | ![](https://raw.githubusercontent.com/photocromax/WLED-live-visualizations/master/GIF//FX_2.gif)

@@ -68,7 +68,7 @@ def render_effect(fx=0, fp=None):
         # use fire palette for fire 2012 effect
         fp = EFFECT_PALETTE if fx != 66 else 35
     # long periods where these effects do nothing - so speed up and capture longer
-    slow_effects = [4, 5, 23, 24, 25, 32, 36, 58, 62, 82, 90]
+    slow_effects = [4, 5, 23, 24, 25, 32, 36, 58, 82, 90]
     if fx in slow_effects:
         sx = 255
         frame_cnt = 120

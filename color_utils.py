@@ -3,6 +3,8 @@ import math
 
 
 def split_rgb(col):
+    if isinstance(col, str):
+        col = int(col, 16)
     r = (col & (255 << 16)) >> 16
     g = (col & (255 << 8)) >> 8
     b = col & 255

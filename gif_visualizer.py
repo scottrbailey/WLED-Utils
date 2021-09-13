@@ -4,7 +4,9 @@
 
 import argparse
 import requests
+import sys
 import time
+import xml.etree.ElementTree as ET
 
 from color_utils import split_rgb
 from PIL import Image, ImageDraw
@@ -17,7 +19,7 @@ SPACE_SIZE = 2
 LED_COUNT = LED_COLS * LED_ROWS
 FRAME_COUNT = LED_COLS * LED_ROWS
 NODE_IP = '192.168.10.208'
-OLD_URL = 'https://raw.githubusercontent.com/photocromax/WLED-live-visualizations/master/GIF/'
+
 # Palette used when rendering effects
 EFFECT_PALETTE = 6
 # Effect used when rendering palettes
@@ -26,16 +28,20 @@ PALLET_EFFECT = 65
 image_size = (LED_COLS * (LED_SIZE + SPACE_SIZE),
               (LED_ROWS * (LED_SIZE + SPACE_SIZE)))
 
-color_1 = 'FF6E41'
-color_2 = 'FFE369'
-color_3 = 'FFB9B8'
+color_1 = 'FF6E41'   # redorange
+color_2 = 'FFE369'   # yellow
+color_3 = 'FFB9B8'   # pink
 
 
 class Node:
-    """ WLED node used to """
+    """ WLED node used to render palette and effects. """
     def __init__(self, ip):
         self.ip = ip
-        req = requests.get(f'http://{ip}/json')
+        try:
+            req = requests.get(f'http://{ip}/json', timeout=3)
+        except requests.exceptions.Timeout:
+            print(f'Could not to WLED node at {ip}. Configure NODE_IP and try again.')
+            sys.exit(1)
 
         self.json = req.json()
         self.palettes = self.json['palettes']
@@ -46,28 +52,32 @@ class Node:
         self.initialize()
 
     def initialize(self):
-        # Set segment bounds and colors, set fx to solid pattern tri
+        # Set segment bounds and colors
         api_cmd = {"on": True, "bri": 127,
-                   "seg": [{"start": 0, "stop": LED_COUNT - 1,
-                            "pal": 5, "fx": 84, "sx": 127, "ix": 0,
-                            "cols": [list(split_rgb(color_1)),
-                                     list(split_rgb(color_2)),
-                                     list(split_rgb(color_3))]}]}
+                   "col": [list(split_rgb(color_1)),
+                           list(split_rgb(color_2)),
+                           list(split_rgb(color_3))],
+                   "seg": [{"start": 0, "stop": LED_COUNT,
+                            "pal": 5, "fx": 84, "sx": 127, "ix": 127}]}
         req = requests.put(f'http://{self.ip}/json', json=api_cmd)
 
-    def liveview(self):
+    def led_colors(self):
+        # return array of colors from live view.
         req = requests.get(f'http://{self.ip}/json/live')
         return req.json()['leds']
 
-    def win(self, fx, fp, sx=127):
+    def win(self, fx, fp, sx=127, ix=127):
         # HTTP Request API call
-        req = requests.get(f'http://{self.ip}/win&FP={fp}&FX={fx}&SX={sx}&TT=0')
+        req = requests.get(f'http://{self.ip}/win&FP={fp}&FX={fx}&SX={sx}&IX={ix}&TT=0')
+
+    def __str__(self):
+        return f'WLED Node ver: {self.json["info"]["ver"]} at {self.ip}'
 
 
 def draw_frame():
     image = Image.new("P", image_size, "black")
     draw = ImageDraw.Draw(image)
-    leds = node.liveview()
+    leds = node.led_colors()
     for i in range(LED_COUNT):
         row = i // LED_COLS
         col = LED_COLS - 1 - (i % LED_COLS) if row % 2 else i % LED_COLS
@@ -97,7 +107,7 @@ def render_effect(fx=0, fp=None, frame_cnt=None):
         # use fire palette for fire 2012 effect
         fp = EFFECT_PALETTE if fx != 66 else 35
     # long periods where these effects do nothing - so speed up and capture longer
-    slow_effects = [4, 5, 23, 24, 25, 32, 36, 58, 82, 90]
+    slow_effects = [4, 5, 32, 36, 44, 57, 58, 82, 90]
     if fx in slow_effects:
         sx = 255
         frame_cnt = frame_cnt if frame_cnt is not None else 160
@@ -127,11 +137,14 @@ def render_all_palettes():
 
 
 def make_md():
+    # url of previous effect / palette renderings
+    old_url = 'https://raw.githubusercontent.com/photocromax/WLED-live-visualizations/master/GIF/'
     image = Image.new("P", (16, 16), "black")
     draw = ImageDraw.Draw(image)
-    # reinitialize node so we can pull gamma corrected colors from it
-    node.initialize()
-    leds = node.liveview()
+    # set fx to Solid Pattern Tri - pal to * Colors Only - speed to 0
+    node.win(84, 5, ix=0)
+    time.sleep(0.2)
+    leds = node.led_colors()
     draw.rectangle((1, 1, 14, 14), fill=split_rgb(int(leds[0], 16)))
     image.save('gifs/color_1.gif', format="GIF")
     draw.rectangle((1, 1, 14, 14), fill=split_rgb(int(leds[1], 16)))
@@ -151,19 +164,17 @@ and the colors
 | ---: | --- | --- | --- 
 ''')
         for i in range(node.effect_cnt):
-            fp.write(f'| {i} | {node.effects[i]} | ![](gifs/FX_{i:03d}.gif) | ![]({OLD_URL}/FX_{i}.gif)\n')
+            fp.write(f'| {i} | {node.effects[i]} | ![](gifs/FX_{i:03d}.gif) | ![]({old_url}/FX_{i}.gif)\n')
+
     with open('palettes.md', 'w') as fp:
         fp.write(f'### Palettes\nPalettes are rendered with the {node.effects[PALLET_EFFECT]} effect\n')
         fp.write('| ID | Palette | New Vis | Old Vis \n| ---: | --- | --- | ---\n')
         for i in range(node.palette_cnt):
-            fp.write(f'| {i} | {node.palettes[i]} | ![](gifs/PAL_{i:02d}.gif) | ![]({OLD_URL}/PAL_{i}.gif)\n')
+            fp.write(f'| {i} | {node.palettes[i]} | ![](gifs/PAL_{i:02d}.gif) | ![]({old_url}/PAL_{i}.gif)\n')
 
 
 if __name__ == "__main__":
-    try:
-        node = Node(NODE_IP)
-    except:
-        print(f'Could not connect to WLED node at http://{NODE_IP}. Please configure NODE_IP.')
+    node = Node(NODE_IP)
 
     parser = argparse.ArgumentParser(description='Render effects and/or palettes as animated GIFs')
     parser.add_argument('-md', action='store_true', help='generate effect/palette markdown files')

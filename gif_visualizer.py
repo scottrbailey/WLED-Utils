@@ -12,12 +12,13 @@ from color_utils import split_rgb
 from PIL import Image, ImageDraw
 
 
-LED_COLS = 20
-LED_ROWS = 3                      # if > 3, it will create segments for a matrix
+LED_COLS = 12
+LED_ROWS = 8                      # if > 3, it will create segments for a matrix
 LED_SIZE = 7                      # size in pixels for each LED
 SPACE_SIZE = 2                    # space in pixels between each LED
 LED_COUNT = LED_COLS * LED_ROWS   # Do not exceed 100. That is all json/live displays
-NODE_IP = '192.168.10.208'
+NODE_IP = '192.168.10.50'
+AC_EFFECT_CNT = 118
 
 # Palette used when rendering effects
 EFFECT_PALETTE = 6
@@ -48,10 +49,13 @@ class Node:
         self.palette_cnt = len(self.palettes)
         self.effect_cnt = len(self.effects)
         #
+        self.initialize()
+        '''
         if LED_ROWS <= 3:
             self.initialize()
         else:
             self.initialize_matrix()
+        '''
 
     def initialize(self):
         # Set segment bounds and colors
@@ -139,9 +143,30 @@ def render_effect(fx=0, fp=None, ix=None, frame_cnt=None):
                    save_all=True, duration=30, loop=0, quality=10)
 
 
-def render_all_effects():
-    for i in range(0, node.effect_cnt):
-        render_effect(i)
+def decode_sr_parms(info):
+    # Convert "Fade rate,Puddle size,,Select bin,Volume (minimum);!,!;!" to something sensible
+    desc = ''
+    parms = ['Speed', 'Intensity', 'FFT Low', 'FFT High', 'FFT Custom']
+    labels = info.split(';')
+    labels = labels[0].split(',')
+    for i in range(len(labels)):
+        label = labels[i]
+        if label == '!':
+            desc += f'**{parms[i]}** <br /> '
+        elif label != '':
+            desc += f'**{parms[i]}**: {label} <br />'
+    return desc
+
+
+def render_all_effects(min_fx=0, max_fx=AC_EFFECT_CNT):
+    for i in range(min_fx, max_fx):
+        name = node.effects[i]
+        if '♫' in name:
+            render_effect(i)
+        '''
+        if 'Reserved' in name:  # '♪' in name or '♫' in name or
+            continue 
+        render_effect(i) '''
 
 
 def render_all_palettes():
@@ -165,7 +190,7 @@ def make_md():
     draw.rectangle((1, 1, 14, 14), fill=split_rgb(leds[2]))
     image.save('gifs/color_3.gif', format="GIF")
 
-    with open('effects.md', 'w') as fp:
+    with open('effects.md', 'w', encoding='utf8') as fp:
         fp.write(f'''### Effects
 To aid in showing where colors vs palettes are used, all effects are rendered with the _{node.palettes[EFFECT_PALETTE]}_ palette  
 and the colors
@@ -176,7 +201,7 @@ and the colors
 | ID | Effect | New Visual | Old Visual 
 | ---: | --- | --- | --- 
 ''')
-        for i in range(node.effect_cnt):
+        for i in range(0, AC_EFFECT_CNT):
             fp.write(f'| {i} | {node.effects[i]} | ![](gifs/FX_{i:03d}.gif) | ![]({old_url}/FX_{i}.gif)\n')
 
     with open('palettes.md', 'w') as fp:
@@ -185,6 +210,37 @@ and the colors
         for i in range(node.palette_cnt):
             fp.write(f'| {i} | {node.palettes[i]} | ![](gifs/PAL_{i:02d}.gif) | ![]({old_url}/PAL_{i}.gif)\n')
 
+    if node.effect_cnt > AC_EFFECT_CNT:
+        tab_head = '| ID | Effect | Visual | Settings \n| ---: | --- | --- | --- \n'
+        sr1 = f'#### Volume Reactive Effects\n{tab_head}'
+        sr2 = f'#### Frequency Reactive Effects\n{tab_head}'
+        sr3 = f'#### Matrix Effects\n{tab_head}'
+        sr4 = f'#### Misc SR Effects\n{tab_head}'
+        with open('effects_sr.md', 'w', encoding='utf8') as fp:
+            fp.write('''### SR Effects\nAll effects are rendered with the Party palette and, of course, _Thunderstruck_ \n''')
+            for i in range(AC_EFFECT_CNT, node.effect_cnt):
+                if '@' in node.effects[i]:
+                    name, det = node.effects[i].split('@')
+                    if ';' in det:
+                        info = decode_sr_parms(det)
+                    else:
+                        info = det
+                else:
+                    name, info = node.effects[i], ''
+                row = f'| {i} | {name} | ![](gifs/FX_{i:03d}.gif) | {info} \n'
+                if '♪' in name:
+                    sr1 += row
+                elif '♫' in name:
+                    sr2 += row
+                elif name.startswith('2D '):
+                    sr3 += row
+                elif 'Reserved' not in name:
+                    sr4 += row
+            fp.write(sr1)
+            fp.write(sr2)
+            fp.write(sr3)
+            fp.write(sr4)
+
 
 if __name__ == "__main__":
     node = Node(NODE_IP)
@@ -192,7 +248,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Render effects and/or palettes as animated GIFs')
     parser.add_argument('-md', action='store_true', help='generate effect/palette markdown files')
     parser.add_argument('--effect', dest='effect', type=int,
-                        help='Render effect (-1 for all)')
+                        help='Render effect (-1 for all, -2 all AC effects, -3 all SR effects)')
     parser.add_argument('--palette', dest='palette', type=int,
                         help='Render palette (-1 for all)')
 
@@ -200,6 +256,12 @@ if __name__ == "__main__":
 
     if args.effect == -1:
         render_all_effects()
+    elif args.effect == -2:
+        # AC only effects
+        render_all_effects(0, AC_EFFECT_CNT)
+    elif args.effect == -3:
+        # AC only effects
+        render_all_effects(AC_EFFECT_CNT, node.effect_cnt)
     elif args.effect is not None:
         render_effect(args.effect)
 

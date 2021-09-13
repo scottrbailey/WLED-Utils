@@ -13,6 +13,7 @@ Actual animation is done on a WLED device and captured from /json/live. You must
 
 * [Effects](effects.md)
 * [Palettes](palettes.md)
+* [Sound Reactive Effects](effects_sr.md)
 
 ### Preset Maker
 Pick your favorite palettes and effects then generate presets.json by combining your favorites. Work in progress.

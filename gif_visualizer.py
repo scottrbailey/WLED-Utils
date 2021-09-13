@@ -1,23 +1,22 @@
-#/usr/bin/env python3
-
-""" """
+#!/usr/bin/env python3
+"""
+Render WLED visualizations by connecting to a WLED node and pulling colors from /json/live
+"""
 
 import argparse
 import requests
 import sys
 import time
-import xml.etree.ElementTree as ET
 
 from color_utils import split_rgb
 from PIL import Image, ImageDraw
 
 
 LED_COLS = 20
-LED_ROWS = 3
-LED_SIZE = 7
-SPACE_SIZE = 2
-LED_COUNT = LED_COLS * LED_ROWS
-FRAME_COUNT = LED_COLS * LED_ROWS
+LED_ROWS = 3                      # if > 3, it will create segments for a matrix
+LED_SIZE = 7                      # size in pixels for each LED
+SPACE_SIZE = 2                    # space in pixels between each LED
+LED_COUNT = LED_COLS * LED_ROWS   # Do not exceed 100. That is all json/live displays
 NODE_IP = '192.168.10.208'
 
 # Palette used when rendering effects
@@ -28,9 +27,9 @@ PALLET_EFFECT = 65
 image_size = (LED_COLS * (LED_SIZE + SPACE_SIZE),
               (LED_ROWS * (LED_SIZE + SPACE_SIZE)))
 
-color_1 = 'FF6E41'   # redorange
-color_2 = 'FFE369'   # yellow
-color_3 = 'FFB9B8'   # pink
+color_1 = 'FF6E41'   # OrangeRed
+color_2 = 'FFE369'   # Yellow
+color_3 = 'FFB9B8'   # Pink
 
 
 class Node:
@@ -49,7 +48,10 @@ class Node:
         self.palette_cnt = len(self.palettes)
         self.effect_cnt = len(self.effects)
         #
-        self.initialize()
+        if LED_ROWS <= 3:
+            self.initialize()
+        else:
+            self.initialize_matrix()
 
     def initialize(self):
         # Set segment bounds and colors
@@ -57,8 +59,17 @@ class Node:
                    "col": [list(split_rgb(color_1)),
                            list(split_rgb(color_2)),
                            list(split_rgb(color_3))],
-                   "seg": [{"start": 0, "stop": LED_COUNT,
-                            "pal": 5, "fx": 84, "sx": 127, "ix": 127}]}
+                   "seg": [{"start": 0, "stop": LED_COUNT, "sel": True}]}
+        req = requests.put(f'http://{self.ip}/json', json=api_cmd)
+
+    def initialize_matrix(self):
+        api_cmd = {"on": True, "bri": 127,
+                   "col": [list(split_rgb(color_1)),
+                           list(split_rgb(color_2)),
+                           list(split_rgb(color_3))],
+                   "seg": []}
+        for i in range(LED_ROWS):
+            api_cmd["seg"].append({"start": i * LED_COLS, "stop": (i+1) * LED_COLS, "sel": True, "rev": bool(i % 2)})
         req = requests.put(f'http://{self.ip}/json', json=api_cmd)
 
     def led_colors(self):
@@ -83,7 +94,7 @@ def draw_frame():
         col = LED_COLS - 1 - (i % LED_COLS) if row % 2 else i % LED_COLS
         x1 = col * (LED_SIZE + SPACE_SIZE) + 1
         y1 = row * (LED_SIZE + SPACE_SIZE) + 1
-        draw.rectangle((x1, y1, x1 + LED_SIZE, y1 + LED_SIZE), fill=split_rgb(int(leds[i], 16)))
+        draw.rectangle((x1, y1, x1 + LED_SIZE, y1 + LED_SIZE), fill=split_rgb(leds[i]))
     return image
 
 
@@ -101,7 +112,7 @@ def render_palette(fp=0):
                    save_all=True, duration=30, loop=0, quality=10)
 
 
-def render_effect(fx=0, fp=None, frame_cnt=None):
+def render_effect(fx=0, fp=None, ix=None, frame_cnt=None):
     # Set effect to fx and palette to Party
     if fp is None:
         # use fire palette for fire 2012 effect
@@ -114,7 +125,9 @@ def render_effect(fx=0, fp=None, frame_cnt=None):
     else:
         sx = 127
         frame_cnt = frame_cnt if frame_cnt is not None else 80
-    node.win(fx, fp, sx)
+    if ix is None:
+        ix = 127
+    node.win(fx, fp, sx, ix)
     print(f'rendering effect {fx} {node.effects[fx]}')
     time.sleep(0.3)
     frames = []
@@ -145,11 +158,11 @@ def make_md():
     node.win(84, 5, ix=0)
     time.sleep(0.2)
     leds = node.led_colors()
-    draw.rectangle((1, 1, 14, 14), fill=split_rgb(int(leds[0], 16)))
+    draw.rectangle((1, 1, 14, 14), fill=split_rgb(leds[0]))
     image.save('gifs/color_1.gif', format="GIF")
-    draw.rectangle((1, 1, 14, 14), fill=split_rgb(int(leds[1], 16)))
+    draw.rectangle((1, 1, 14, 14), fill=split_rgb(leds[1]))
     image.save('gifs/color_2.gif', format="GIF")
-    draw.rectangle((1, 1, 14, 14), fill=split_rgb(int(leds[2], 16)))
+    draw.rectangle((1, 1, 14, 14), fill=split_rgb(leds[2]))
     image.save('gifs/color_3.gif', format="GIF")
 
     with open('effects.md', 'w') as fp:

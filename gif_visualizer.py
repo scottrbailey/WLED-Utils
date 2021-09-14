@@ -12,8 +12,8 @@ from color_utils import split_rgb
 from PIL import Image, ImageDraw
 
 
-LED_COLS = 12
-LED_ROWS = 8                      # if > 3, it will create segments for a matrix
+LED_COLS = 20
+LED_ROWS = 3
 LED_SIZE = 7                      # size in pixels for each LED
 SPACE_SIZE = 2                    # space in pixels between each LED
 LED_COUNT = LED_COLS * LED_ROWS   # Do not exceed 100. That is all json/live displays

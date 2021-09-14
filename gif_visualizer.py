@@ -31,11 +31,12 @@ image_size = (LED_COLS * (LED_SIZE + SPACE_SIZE),
 color_1 = 'FF6E41'   # OrangeRed
 color_2 = 'FFE369'   # Yellow
 color_3 = 'FFB9B8'   # Pink
+slow_effects = [4, 5, 32, 36, 44, 57, 58, 82, 90]
 
 
 class Node:
     """ WLED node used to render palette and effects. """
-    def __init__(self, ip):
+    def __init__(self, ip, static_mode=False):
         self.ip = ip
         try:
             req = requests.get(f'http://{ip}/json', timeout=3)
@@ -49,21 +50,19 @@ class Node:
         self.palette_cnt = len(self.palettes)
         self.effect_cnt = len(self.effects)
         #
-        self.initialize()
-        '''
-        if LED_ROWS <= 3:
-            self.initialize()
-        else:
-            self.initialize_matrix()
-        '''
+        self.initialize(static_mode)
 
-    def initialize(self):
+    def initialize(self, static_mode=False):
         # Set segment bounds and colors
-        api_cmd = {"on": True, "bri": 127,
+        bg_col = [0,0,0] if static_mode else list(split_rgb(color_2))
+        api_cmd = {"on": True, "bri": 255,
                    "col": [list(split_rgb(color_1)),
-                           list(split_rgb(color_2)),
+                           bg_col,
                            list(split_rgb(color_3))],
-                   "seg": [{"start": 0, "stop": LED_COUNT, "sel": True}]}
+                   "seg": [{"start": 0, "stop": LED_COUNT, "sel": True,
+                            "col": [list(split_rgb(color_1)),
+                                bg_col,
+                                list(split_rgb(color_3))]}]}
         req = requests.put(f'http://{self.ip}/json', json=api_cmd)
 
     def initialize_matrix(self):
@@ -102,6 +101,14 @@ def draw_frame():
     return image
 
 
+def add_frame_(img, x):
+    # renders frame at 1 pixel per LED along y axis
+    leds = node.led_colors()
+    for y in range(LED_COUNT):
+        img.putpixel((x, y), split_rgb(leds[y]))
+    return img
+
+
 def render_palette(fp=0):
     # Set effect to Palette and palette fp
     node.win(PALLET_EFFECT, fp)
@@ -116,13 +123,34 @@ def render_palette(fp=0):
                    save_all=True, duration=30, loop=0, quality=10)
 
 
+def render_effect_static(fx, fp=None, ix=127, frame_cnt=None):
+    if fp is None:
+        # use fire palette for fire 2012 effect
+        fp = EFFECT_PALETTE if fx != 66 else 35
+    if fx in slow_effects:
+        sx = 255
+        frame_cnt = frame_cnt or 160
+    else:
+        sx = 127
+        frame_cnt = frame_cnt or 160
+
+    node.win(fx, fp, sx, ix)
+    image = Image.new("RGB", (frame_cnt, LED_COUNT), "black")
+    print(f'rendering effect {fx} {node.effects[fx]}')
+    time.sleep(0.3)
+    for i in range(frame_cnt):
+        add_frame_(image, i)
+        time.sleep(0.02)
+    image.save(f'gifs/FX_static_{fx:03d}.gif', format="GIF", quality=10)
+
+
 def render_effect(fx=0, fp=None, ix=None, frame_cnt=None):
     # Set effect to fx and palette to Party
     if fp is None:
         # use fire palette for fire 2012 effect
         fp = EFFECT_PALETTE if fx != 66 else 35
     # long periods where these effects do nothing - so speed up and capture longer
-    slow_effects = [4, 5, 32, 36, 44, 57, 58, 82, 90]
+
     if fx in slow_effects:
         sx = 255
         frame_cnt = frame_cnt if frame_cnt is not None else 160
@@ -158,15 +186,15 @@ def decode_sr_parms(info):
     return desc
 
 
-def render_all_effects(min_fx=0, max_fx=AC_EFFECT_CNT):
+def render_all_effects(static_mode=False, min_fx=0, max_fx=AC_EFFECT_CNT):
     for i in range(min_fx, max_fx):
         name = node.effects[i]
-        if '♫' in name:
-            render_effect(i)
-        '''
         if 'Reserved' in name:  # '♪' in name or '♫' in name or
-            continue 
-        render_effect(i) '''
+            continue
+        if static_mode:
+            render_effect_static(i)
+        else:
+            render_effect(i)
 
 
 def render_all_palettes():
@@ -196,13 +224,22 @@ To aid in showing where colors vs palettes are used, all effects are rendered wi
 and the colors
 ![](gifs/color_1.gif) primary
 ![](gifs/color_2.gif) secondary
-![](gifs/color_3.gif) tertiary colors
+![](gifs/color_3.gif) tertiary colors. For static renders the background (secondary) color is set to black.
 
-| ID | Effect | New Visual | Old Visual 
-| ---: | --- | --- | --- 
+| ID | Effect | Animated Visual | Static Visual | Parms
+| ---: | --- | --- | --- | ---
 ''')
         for i in range(0, AC_EFFECT_CNT):
-            fp.write(f'| {i} | {node.effects[i]} | ![](gifs/FX_{i:03d}.gif) | ![]({old_url}/FX_{i}.gif)\n')
+            if '@' in node.effects[i]:
+                name, det = node.effects[i].split('@')
+                if ';' in det:
+                    info = decode_sr_parms(det)
+                else:
+                    info = det
+            else:
+                name = node.effects[i]
+                info = '-'
+            fp.write(f'| {i} | {name} | ![](gifs/FX_{i:03d}.gif) | ![](gifs/FX_static_{i:03d}.gif) | {info}\n')
 
     with open('palettes.md', 'w') as fp:
         fp.write(f'### Palettes\nPalettes are rendered with the {node.effects[PALLET_EFFECT]} effect\n')
@@ -243,27 +280,33 @@ and the colors
 
 
 if __name__ == "__main__":
-    node = Node(NODE_IP)
-
     parser = argparse.ArgumentParser(description='Render effects and/or palettes as animated GIFs')
     parser.add_argument('-md', action='store_true', help='generate effect/palette markdown files')
+    parser.add_argument('-s', action='store_true', help='Static mode - render static GIFs')
     parser.add_argument('--effect', dest='effect', type=int,
                         help='Render effect (-1 for all, -2 all AC effects, -3 all SR effects)')
     parser.add_argument('--palette', dest='palette', type=int,
                         help='Render palette (-1 for all)')
+    parser.add_argument('--ip', dest='ip', help='Override IP address of WLED node')
 
     args = parser.parse_args()
 
+    ip = args.ip or NODE_IP
+    node = Node(ip, args.s)
+
     if args.effect == -1:
-        render_all_effects()
+        render_all_effects(args.s)
     elif args.effect == -2:
         # AC only effects
-        render_all_effects(0, AC_EFFECT_CNT)
+        render_all_effects(args.s, 0, AC_EFFECT_CNT)
     elif args.effect == -3:
         # AC only effects
-        render_all_effects(AC_EFFECT_CNT, node.effect_cnt)
+        render_all_effects(args.s, AC_EFFECT_CNT, node.effect_cnt)
     elif args.effect is not None:
-        render_effect(args.effect)
+        if args.s:
+            render_effect_static(args.effect)
+        else:
+            render_effect(args.effect)
 
     if args.palette == -1:
         render_all_palettes()
@@ -272,3 +315,4 @@ if __name__ == "__main__":
 
     if args.md:
         make_md()
+

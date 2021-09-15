@@ -4,9 +4,13 @@ Render WLED visualizations by connecting to a WLED node and pulling colors from 
 """
 
 import argparse
+import asyncio
+import json
+import queue
 import requests
 import sys
 import time
+import websockets
 
 from color_utils import split_rgb
 from PIL import Image, ImageDraw
@@ -19,6 +23,9 @@ SPACE_SIZE = 2                    # space in pixels between each LED
 LED_COUNT = LED_COLS * LED_ROWS   # Do not exceed 100. That is all json/live displays
 NODE_IP = '192.168.10.50'
 AC_EFFECT_CNT = 118
+ANIMATED_MODE = 1
+STATIC_MODE = 2
+MULTI_MODE = 3                    # render animated and static
 
 # Palette used when rendering effects
 EFFECT_PALETTE = 6
@@ -31,7 +38,6 @@ image_size = (LED_COLS * (LED_SIZE + SPACE_SIZE),
 color_1 = 'FF6E41'   # OrangeRed
 color_2 = 'FFE369'   # Yellow
 color_3 = 'FFB9B8'   # Pink
-slow_effects = [4, 5, 32, 36, 44, 57, 58, 82, 90]
 
 
 class Node:
@@ -49,13 +55,14 @@ class Node:
         self.effects = self.json['effects']
         self.palette_cnt = len(self.palettes)
         self.effect_cnt = len(self.effects)
+        self.frames = None
         #
         self.initialize(static_mode)
 
     def initialize(self, static_mode=False):
         # Set segment bounds and colors
         bg_col = [0,0,0] if static_mode else list(split_rgb(color_2))
-        api_cmd = {"on": True, "bri": 255,
+        api_cmd = {"on": True, "bri": 255, "transition": 0,
                    "col": [list(split_rgb(color_1)),
                            bg_col,
                            list(split_rgb(color_3))],
@@ -63,16 +70,6 @@ class Node:
                             "col": [list(split_rgb(color_1)),
                                 bg_col,
                                 list(split_rgb(color_3))]}]}
-        req = requests.put(f'http://{self.ip}/json', json=api_cmd)
-
-    def initialize_matrix(self):
-        api_cmd = {"on": True, "bri": 127,
-                   "col": [list(split_rgb(color_1)),
-                           list(split_rgb(color_2)),
-                           list(split_rgb(color_3))],
-                   "seg": []}
-        for i in range(LED_ROWS):
-            api_cmd["seg"].append({"start": i * LED_COLS, "stop": (i+1) * LED_COLS, "sel": True, "rev": bool(i % 2)})
         req = requests.put(f'http://{self.ip}/json', json=api_cmd)
 
     def led_colors(self):
@@ -83,6 +80,22 @@ class Node:
     def win(self, fx, fp, sx=127, ix=127):
         # HTTP Request API call
         req = requests.get(f'http://{self.ip}/win&FP={fp}&FX={fx}&SX={sx}&IX={ix}&TT=0')
+
+    async def run_and_record(self, fx, pal, sx=127, ix=127, frame_cnt=160):
+        # switch to effect/palette, connect websocket and capture live data
+        frames = queue.Queue(maxsize=frame_cnt)
+        print(f'Recording {self.effects[fx]} - {self.palettes[pal]}')
+        async with websockets.connect(f'ws://{self.ip}/ws') as ws:
+            parms = {"transition": 0, "bri": 255, "lv": True,
+                     "seg": [{"fx": fx, "pal": pal, "sx": sx, "ix": ix}]}
+            await ws.send(json.dumps(parms))
+            while not frames.full():
+                data = await ws.recv()
+                jd = json.loads(data)
+                if 'leds' in jd:
+                    leds = [int(c, 16) for c in jd.get('leds')]
+                    frames.put(leds)
+        self.frames = frames
 
     def __str__(self):
         return f'WLED Node ver: {self.json["info"]["ver"]} at {self.ip}'
@@ -99,6 +112,21 @@ def draw_frame():
         y1 = row * (LED_SIZE + SPACE_SIZE) + 1
         draw.rectangle((x1, y1, x1 + LED_SIZE, y1 + LED_SIZE), fill=split_rgb(leds[i]))
     return image
+
+
+class Renderer:
+    slow_effects = [4, 5, 32, 36, 44, 57, 58, 82, 90]
+
+    def __init__(self, wled, mode=ANIMATED_MODE):
+        self.wled = wled
+        self.mode = mode
+
+    def render(self, fx, pal, sx=127, ix=127, frame_cnt=100):
+
+
+
+def animate(data):
+    image = Image.new("P", image_size, "black")
 
 
 def add_frame_(img, x):
@@ -142,6 +170,23 @@ def render_effect_static(fx, fp=None, ix=127, frame_cnt=None):
         add_frame_(image, i)
         time.sleep(0.02)
     image.save(f'gifs/FX_static_{fx:03d}.gif', format="GIF", quality=10)
+
+
+def render(node, fx, fp=None, ix=None, frame_cnt=None, ):
+    if fp is None:
+        # use fire palette for fire 2012 effect
+        fp = EFFECT_PALETTE if fx != 66 else 35
+    if fx in slow_effects:
+        sx = 255
+        frame_cnt = frame_cnt if frame_cnt is not None else 160
+    else:
+        sx = 127
+        frame_cnt = frame_cnt if frame_cnt is not None else 80
+    if ix is None:
+        ix = 127
+    asyncio.run(node.run_and_record(fx, fp, sx, ix, frame_cnt))
+
+
 
 
 def render_effect(fx=0, fp=None, ix=None, frame_cnt=None):

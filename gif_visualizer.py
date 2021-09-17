@@ -13,7 +13,7 @@ import time
 import websockets
 
 from color_utils import split_rgb
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 
 LED_COLS = 20
@@ -21,11 +21,10 @@ LED_ROWS = 3
 LED_SIZE = 7                      # size in pixels for each LED
 SPACE_SIZE = 2                    # space in pixels between each LED
 LED_COUNT = LED_COLS * LED_ROWS   # Do not exceed 100. That is all json/live displays
+STATIC_LED_COUNT = 96
 NODE_IP = '192.168.10.50'
 AC_EFFECT_CNT = 118
-ANIMATED_MODE = 1
-STATIC_MODE = 2
-MULTI_MODE = 3                    # render animated and static
+
 
 # Palette used when rendering effects
 EFFECT_PALETTE = 6
@@ -55,7 +54,7 @@ class Node:
         self.effects = self.json['effects']
         self.palette_cnt = len(self.palettes)
         self.effect_cnt = len(self.effects)
-        self.frames = None
+        self.frames = []
         #
         self.initialize(static_mode)
 
@@ -66,7 +65,7 @@ class Node:
                    "col": [list(split_rgb(color_1)),
                            bg_col,
                            list(split_rgb(color_3))],
-                   "seg": [{"start": 0, "stop": LED_COUNT, "sel": True,
+                   "seg": [{"start": 0, "stop": STATIC_LED_COUNT, "sel": True,
                             "col": [list(split_rgb(color_1)),
                                 bg_col,
                                 list(split_rgb(color_3))]}]}
@@ -83,137 +82,141 @@ class Node:
 
     async def run_and_record(self, fx, pal, sx=127, ix=127, frame_cnt=160):
         # switch to effect/palette, connect websocket and capture live data
-        frames = queue.Queue(maxsize=frame_cnt)
+        frames = []
+        cnt = 0
         print(f'Recording {self.effects[fx]} - {self.palettes[pal]}')
         async with websockets.connect(f'ws://{self.ip}/ws') as ws:
-            parms = {"transition": 0, "bri": 255, "lv": True,
+            parms = {"transition": 0, "bri": 255,
                      "seg": [{"fx": fx, "pal": pal, "sx": sx, "ix": ix}]}
             await ws.send(json.dumps(parms))
-            while not frames.full():
+            time.sleep(0.3)
+            await ws.send('{"lv": true}')
+            while cnt < frame_cnt:
                 data = await ws.recv()
                 jd = json.loads(data)
                 if 'leds' in jd:
                     leds = [int(c, 16) for c in jd.get('leds')]
-                    frames.put(leds)
+                    frames.append(leds)
+                    cnt += 1
         self.frames = frames
 
     def __str__(self):
         return f'WLED Node ver: {self.json["info"]["ver"]} at {self.ip}'
 
 
-def draw_frame():
-    image = Image.new("P", image_size, "black")
-    draw = ImageDraw.Draw(image)
-    leds = node.led_colors()
-    for i in range(LED_COUNT):
-        row = i // LED_COLS
-        col = LED_COLS - 1 - (i % LED_COLS) if row % 2 else i % LED_COLS
-        x1 = col * (LED_SIZE + SPACE_SIZE) + 1
-        y1 = row * (LED_SIZE + SPACE_SIZE) + 1
-        draw.rectangle((x1, y1, x1 + LED_SIZE, y1 + LED_SIZE), fill=split_rgb(leds[i]))
-    return image
-
-
 class Renderer:
+    ANIMATED_MODE = 1
+    STATIC_MODE = 2
+    MULTI_MODE = 3               # render animated and static
+
     slow_effects = [4, 5, 32, 36, 44, 57, 58, 82, 90]
 
-    def __init__(self, wled, mode=ANIMATED_MODE):
+    def __init__(self, wled, cols, rows, led_size, space_size, mode=ANIMATED_MODE):
         self.wled = wled
+        self.cols = cols
+        self.rows = rows
+        self.led_size = led_size
+        self.space_size = space_size
+        self.combined_size = led_size + space_size
         self.mode = mode
+        self.led_count = rows * cols
+        self.image_size = (cols * self.combined_size,
+                           rows * self.combined_size)
+        self.frame_cnt = 0
 
-    def render(self, fx, pal, sx=127, ix=127, frame_cnt=100):
+    def _render_animated_frame(self, frame_no):
+        data = self.wled.frames[frame_no]
+        if data:
+            image = Image.new("P", self.image_size)
+            draw = ImageDraw.Draw(image)
+            for i in range(self.led_count):
+                row = i // self.cols
+                col = self.cols - 1 - (i % self.cols) if row % 2 else i % self.cols
+                x1 = col * self.combined_size
+                y1 = row * self.combined_size
+                draw.rectangle((x1, y1, x1+self.led_size, y1 + self.led_size), fill=split_rgb(data[i]))
+            return image
 
+    def _render_animated(self, fname):
+        #
+        frames = []
+        for i in range(len(self.wled.frames)):
+            frames.append(self._render_animated_frame(i))
+        frame_one = frames[0]
+        frame_one.save(f'gifs/animated/{fname}.gif', format="GIF", append_images=frames, save_all=True,
+                       duration=30, loop=0, quality=10)
 
+    def _render_static(self, fname):
+        #
+        lm = STATIC_LED_COUNT - 1
+        pixel_size = 2
+        image = Image.new("RGB", (self.frame_cnt * pixel_size, STATIC_LED_COUNT * pixel_size), "black")
+        draw = ImageDraw.Draw(image)
+        for x in range(len(self.wled.frames)):
+            data = self.wled.frames[x]
+            if data is None:
+                continue
+            for i in range(STATIC_LED_COUNT):
+                y = lm - i
+                x1 = x * pixel_size
+                y1 = y * pixel_size
+                x2 = x1 + pixel_size - 1
+                y2 = y1 + pixel_size - 1
+                draw.rectangle((x1, y1, x2, y2), fill=split_rgb(data[i]))
+                # image.putpixel((x, y), split_rgb(data[i]))
+        image.filter(ImageFilter.GaussianBlur(radius=2))
+        image.save(f'gifs/static/{fname}.png', format="PNG", quality=10)
 
-def animate(data):
-    image = Image.new("P", image_size, "black")
-
-
-def add_frame_(img, x):
-    # renders frame at 1 pixel per LED along y axis
-    leds = node.led_colors()
-    for y in range(LED_COUNT):
-        img.putpixel((x, y), split_rgb(leds[y]))
-    return img
-
-
-def render_palette(fp=0):
-    # Set effect to Palette and palette fp
-    node.win(PALLET_EFFECT, fp)
-    print(f'rendering palette {fp} {node.palettes[fp]}')
-    time.sleep(0.3)
-    frames = []
-    for number in range(80):
-        time.sleep(0.02)
-        frames.append(draw_frame())
-    frame_one = frames[0]
-    frame_one.save(f'gifs/PAL_{fp:02d}.gif', format="GIF", append_images=frames,
-                   save_all=True, duration=30, loop=0, quality=10)
-
-
-def render_effect_static(fx, fp=None, ix=127, frame_cnt=None):
-    if fp is None:
-        # use fire palette for fire 2012 effect
-        fp = EFFECT_PALETTE if fx != 66 else 35
-    if fx in slow_effects:
-        sx = 255
-        frame_cnt = frame_cnt or 160
-    else:
-        sx = 127
-        frame_cnt = frame_cnt or 160
-
-    node.win(fx, fp, sx, ix)
-    image = Image.new("RGB", (frame_cnt, LED_COUNT), "black")
-    print(f'rendering effect {fx} {node.effects[fx]}')
-    time.sleep(0.3)
-    for i in range(frame_cnt):
-        add_frame_(image, i)
-        time.sleep(0.02)
-    image.save(f'gifs/FX_static_{fx:03d}.gif', format="GIF", quality=10)
-
-
-def render(node, fx, fp=None, ix=None, frame_cnt=None, ):
-    if fp is None:
-        # use fire palette for fire 2012 effect
-        fp = EFFECT_PALETTE if fx != 66 else 35
-    if fx in slow_effects:
-        sx = 255
-        frame_cnt = frame_cnt if frame_cnt is not None else 160
-    else:
-        sx = 127
-        frame_cnt = frame_cnt if frame_cnt is not None else 80
-    if ix is None:
-        ix = 127
-    asyncio.run(node.run_and_record(fx, fp, sx, ix, frame_cnt))
+    def render(self, fname, fx, pal, sx=127, ix=127, frame_cnt=160, mode=None):
+        self.frame_cnt = frame_cnt
+        asyncio.run(self.wled.run_and_record(fx, pal, sx, ix, self.frame_cnt))
+        print('Rendering')
+        if mode is None:
+            mode = self.mode
+        if mode & self.ANIMATED_MODE:
+            self._render_animated(fname)
+        if mode & self.STATIC_MODE:
+            self._render_static(fname)
 
 
-
-
-def render_effect(fx=0, fp=None, ix=None, frame_cnt=None):
+def render_effect(renderer, fx=0, pal=None, ix=None, frame_cnt=None):
     # Set effect to fx and palette to Party
-    if fp is None:
+    if pal is None:
         # use fire palette for fire 2012 effect
-        fp = EFFECT_PALETTE if fx != 66 else 35
+        pal = EFFECT_PALETTE if fx != 66 else 35
     # long periods where these effects do nothing - so speed up and capture longer
 
-    if fx in slow_effects:
+    if frame_cnt is None:
+        frame_cnt = 160
+    if fx in Renderer.slow_effects:
         sx = 255
-        frame_cnt = frame_cnt if frame_cnt is not None else 160
     else:
         sx = 127
-        frame_cnt = frame_cnt if frame_cnt is not None else 80
     if ix is None:
         ix = 127
-    node.win(fx, fp, sx, ix)
+    node.win(fx, pal, sx, ix)
     print(f'rendering effect {fx} {node.effects[fx]}')
-    time.sleep(0.3)
-    frames = []
-    for number in range(frame_cnt):
-        time.sleep(0.02)
-        frames.append(draw_frame())
-    frame_one = frames[0]
-    frame_one.save(f'gifs/FX_{fx:03d}.gif', format="GIF", append_images=frames,
-                   save_all=True, duration=30, loop=0, quality=10)
+    fname = f'FX_{fx:03d}'
+    renderer.render(fname, fx, pal, sx, ix, frame_cnt)
+
+
+def render_palette(renderer, pal):
+    #
+    fname = f'PAL_{pal:02d}.gif'
+    renderer.render(fname, PALLET_EFFECT, pal, frame_cnt=1, mode=renderer.ANIMATED_MODE)
+
+
+def render_all_effects(r, min_fx=0, max_fx=AC_EFFECT_CNT):
+    for i in range(min_fx, max_fx):
+        name = node.effects[i]
+        if 'Reserved' in name:  # '♪' in name or '♫' in name or
+            continue
+        render_effect(r, i)
+
+
+def render_all_palettes(r):
+    for i in range(0, node.palette_cnt):
+        render_palette(r, i)
 
 
 def decode_sr_parms(info):
@@ -229,23 +232,6 @@ def decode_sr_parms(info):
         elif label != '':
             desc += f'**{parms[i]}**: {label} <br />'
     return desc
-
-
-def render_all_effects(static_mode=False, min_fx=0, max_fx=AC_EFFECT_CNT):
-    for i in range(min_fx, max_fx):
-        name = node.effects[i]
-        if 'Reserved' in name:  # '♪' in name or '♫' in name or
-            continue
-        if static_mode:
-            render_effect_static(i)
-        else:
-            render_effect(i)
-
-
-def render_all_palettes():
-    for i in range(0, node.palette_cnt):
-        render_palette(i)
-
 
 def make_md():
     # url of previous effect / palette renderings
@@ -338,6 +324,7 @@ if __name__ == "__main__":
 
     ip = args.ip or NODE_IP
     node = Node(ip, args.s)
+    renderer = Renderer(node, LED_COLS, LED_ROWS, LED_SIZE, SPACE_SIZE, 3)
 
     if args.effect == -1:
         render_all_effects(args.s)
@@ -349,7 +336,7 @@ if __name__ == "__main__":
         render_all_effects(args.s, AC_EFFECT_CNT, node.effect_cnt)
     elif args.effect is not None:
         if args.s:
-            render_effect_static(args.effect)
+            render_effect(args.effect)
         else:
             render_effect(args.effect)
 

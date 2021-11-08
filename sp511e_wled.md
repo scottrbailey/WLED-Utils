@@ -10,7 +10,10 @@ And before you can use the app, you have to register with your email.
 
 To make better use of these controllers, we will be replacing the stock firmware with [WLED](https://github.com/Aircoookie/WLED).
 WLED is open source and features over 100 animations and 70 color palettes, a large number of interfaces and is very configurable.
-It won't however be able to take advantage of the microphone. In a later instalment, we will look at installing the Sound Reactive fork of WLED.  
+There is also a Sound Reactive fork of WLED. Because the FFT calculations require the additional processing power of the ESP32, the Sound Reactive
+WLED community focuses their efforts there. The EPS8266 version does not have 2D matrix support or FFT effects, but it does have
+over a dozen sound reactive animations in addition to all the effects in standard WLED. 
+
 ![SP511E Controller](media/sp511e_remote_controller.png)
 ![front](media/sp511e_front.jpg)
 
@@ -21,7 +24,7 @@ to perform over the air (OTA) updates.  Here is what you will need:
 - Install the CP2102 [drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers).
 - A program to write to the ESP8266. Review the guide on [installing the WLED binary](https://kno.wled.ge/basics/install-binary/). I will be using esptool in this guide but ESP Home Flasher will work also.
 - A clip to attach the CP2102 to the RS232 pads on the bottom of the board, and Dupont wires to attach the clip to the CP2102 adapter. You can purchase [pogo pin clips](https://www.aliexpress.com/item/1005001409579446.html) designed for this (2.0mm single row 5 pin). We will be making our own later in this guide.
-- The [WLED 0.13.0-b2](https://github.com/srg74/WLED-wemos-shield/blob/master/resources/Firmware/WLED_wemos_shield/v0.13.0-b2/SP511E.bin) firmware.
+- The firmware [WLED 0.13.0-b4](https://github.com/srg74/WLED-wemos-shield/raw/master/resources/Firmware/WLED_wemos_shield/v0.13.0-b4/SP511E.bin) or [SoundReactive 0.13.0b-3](https://github.com/scottrbailey/WLED-Utils/raw/gh-pages/firmware/soundReactive_0.13.0-b3_sp511e.bin).
 
 #### Building a Clip
 If you plan on flashing many of these controllers, I highly recommend purchasing the pogo pin clip. 

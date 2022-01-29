@@ -67,6 +67,6 @@ to get it connected to your network and configured.
 
 Once your basic setup is complete, go back to the "LED Settings" page.
 - Configure IR by selecting "JSON remote" as the remote type. The IR pin is 5, but should already be set for you. Once you select "JSON remote" a control will appear to upload the config.  Upload the 38-key config found [here](https://kno.wled.ge/interfaces/json-ir/json_infrared/).
-- Configure the two additional buttons. The power button (pin 2) is set as button 0 because its default behavior is to toggle off and on. Set button 1 to pin 13 ("M" button) and button 2 to 12 ("S" button). 
+- Configure the two additional buttons. The power button (pin 2) is set as button 0 because its default behavior is to toggle off and on. Set button 1 to pin 13 ("M" button) and button 2 to 14 ("S" button). 
 - You will need to make presets for each button action to make the "M" button cycle through effects create on preset with API Command of `FX=~` and save to ID 100. Then make a second preset with `FX=~-` and save to 101. To cycle speed with the "S" button, you want to take bigger steps. The API commands would be `SX=~16` and `SX=~-16`.
 - Finally, you need to map your presets to the button action. Go to Config -> "Time & Macros" and set short press on button 1 to 100 and long press to 101. If you made presets for the "S" button, set them here as well.

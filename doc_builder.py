@@ -13,6 +13,16 @@ def make_effect_md(node:WledNode):
         effect_desc = json.load(ed)
     with open('effects.md', 'w', encoding='utf8') as fp:
         fp.write(dedent('''\
+        ### Effects
+        
+        To aid in showing where colors vs palettes are used, all effects are rendered with the 
+        _Party_ palette ![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/PAL_06.gif) 
+        and the colors: <br />
+        ![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/color_1.gif) primary _Fx_<br />
+        ![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/color_2.gif) secondary _Bg_<br />
+        ![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/color_3.gif) tertiary _Cs.<br />
+        For 2D effects the background (secondary) color is set to black.
+
         | ID | Effect | Description | Flags | Parms
         | ---: | --- | --- | --- | --- 
         '''))

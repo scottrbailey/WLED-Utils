@@ -1,3 +1,12 @@
+### Effects
+
+To aid in showing where colors vs palettes are used, all effects are rendered with the _Party_ palette 
+![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/PAL_06.gif)
+and the colorsL <br />
+![](gifs/color_1.gif) primary _Fx_<br />
+![](gifs/color_2.gif) secondary _Bg_<br />
+![](gifs/color_3.gif) tertiary _Cs_.<br/> For static renders the background (secondary) color is set to black.
+
 | ID | Effect | Description | Flags | Parms
 | ---: | --- | --- | --- | --- 
 | 0 | Solid | Solid primary color on all LEDs <br /> ![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/FX_000.gif) |  ⋮ | 

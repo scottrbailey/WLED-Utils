@@ -3,6 +3,7 @@ import math
 
 
 def split_rgb(col):
+    """Convert 24 bit int or 6 digit hex to 8 bit R, G, B"""
     if isinstance(col, str):
         col = int(col, 16)
     r = (col & (255 << 16)) >> 16
@@ -11,11 +12,19 @@ def split_rgb(col):
     return r, g, b
 
 
+def rgb_to_int(r, g, b):
+    """Convert 8 bit R,G,B to 24 bit int"""
+    return (r << 16) + (g << 8) + b
+
+
 def to_hex(r, g, b):
+    """Convert R,G,B to 6 digit hex"""
     return f'{r:02X}{g:02X}{b:02X}'
 
 
 def color_distance(c1, c2):
+    if c1 == c2:
+        return 0
     r1 = (c1 & 255 << 16) >> 16
     r2 = (c2 & 255 << 16) >> 16
     g1 = (c1 & 255 << 8) >> 8

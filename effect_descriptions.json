@@ -1,0 +1,937 @@
+[
+    {
+        "description": "Solid primary color on all LEDs",
+        "id": "0",
+        "name": "Solid"
+    },
+    {
+        "description": "Blinks between primary and secondary color",
+        "id": "1",
+        "name": "Blink"
+    },
+    {
+        "description": "Fades between primary and secondary color",
+        "id": "2",
+        "name": "Breathe"
+    },
+    {
+        "description": "Switches between primary and secondary, switching LEDs one by one, start to end",
+        "id": "3",
+        "name": "Wipe"
+    },
+    {
+        "description": "Same as Wipe, but uses random colors",
+        "id": "4",
+        "name": "Wipe Random"
+    },
+    {
+        "description": "Applies a new random color to all LEDs",
+        "id": "5",
+        "name": "Random Colors"
+    },
+    {
+        "description": "Switches between primary and secondary, switching LEDs one by one, start to end to start",
+        "id": "6",
+        "name": "Sweep"
+    },
+    {
+        "description": "Sets each LED to a random color",
+        "id": "7",
+        "name": "Dynamic"
+    },
+    {
+        "description": "Cycle all LEDs through the rainbow colors",
+        "id": "8",
+        "name": "Colorloop"
+    },
+    {
+        "description": "Displays rainbow colors along the whole strip",
+        "id": "9",
+        "name": "Rainbow"
+    },
+    {
+        "description": "A single primary colored light wanders between start and end",
+        "id": "10",
+        "name": "Scan"
+    },
+    {
+        "description": "Same as Scan but uses two lights starting at both ends",
+        "id": "11",
+        "name": "Scan Dual"
+    },
+    {
+        "description": "Fades smoothly between primary and secondary color",
+        "id": "12",
+        "name": "Fade"
+    },
+    {
+        "description": "Pattern of one lit and two unlit LEDs running",
+        "id": "13",
+        "name": "Theater"
+    },
+    {
+        "description": "Same as Theater but uses colors of the rainbow",
+        "id": "14",
+        "name": "Theater Rainbow"
+    },
+    {
+        "description": "Sine Waves scrolling",
+        "id": "15",
+        "name": "Running"
+    },
+    {
+        "description": "Sawtooth Waves scrolling",
+        "id": "16",
+        "name": "Saw"
+    },
+    {
+        "description": "Random LEDs light up in the primary color with secondary as background",
+        "id": "17",
+        "name": "Twinkle"
+    },
+    {
+        "description": "Fills LEDs with primary in random order, then off again",
+        "id": "18",
+        "name": "Dissolve"
+    },
+    {
+        "description": "Fills LEDs with random colors in random order, then off again",
+        "id": "19",
+        "name": "Dissolve Rnd"
+    },
+    {
+        "description": "Single random LEDs light up in the primary color for a short time, secondary is background",
+        "id": "20",
+        "name": "Sparkle"
+    },
+    {
+        "description": "All LEDs are lit in the primary color, single random LEDs turn off for a short time",
+        "id": "21",
+        "name": "Sparkle Dark"
+    },
+    {
+        "description": "All LEDs are lit in the primary color, multiple random LEDs turn off for a short time",
+        "id": "22",
+        "name": "Sparkle+"
+    },
+    {
+        "description": "All LEDs are lit in the secondary color, all LEDs flash in a single short burst in primary color",
+        "id": "23",
+        "name": "Strobe"
+    },
+    {
+        "description": "Same as strobe, cycles through the rainbow",
+        "id": "24",
+        "name": "Strobe Rainbow"
+    },
+    {
+        "description": "All LEDs are lit in the secondary color, all LEDs flash in several short bursts in primary color",
+        "id": "25",
+        "name": "Strobe Mega"
+    },
+    {
+        "description": "Same as blink, cycles through the rainbow",
+        "id": "26",
+        "name": "Blink Rainbow"
+    },
+    {
+        "description": "Section of varying length running",
+        "id": "27",
+        "name": "Android"
+    },
+    {
+        "description": "2 LEDs in primary color running on secondary",
+        "id": "28",
+        "name": "Chase"
+    },
+    {
+        "description": "Like Chase but leaves trail of random color",
+        "id": "29",
+        "name": "Chase Random"
+    },
+    {
+        "description": "Like 28 but leaves trail of rainbow",
+        "id": "30",
+        "name": "Chase Rainbow"
+    },
+    {
+        "description": "2 LEDs flash in secondary color while the rest is lit in primary. The flashing LEDs wander from start to end",
+        "id": "31",
+        "name": "Chase Flash"
+    },
+    {
+        "description": "Like Chase Flash, but the 2 LEDs flash in random colors and leaves a random color behind",
+        "id": "32",
+        "name": "Chase Flash Rnd"
+    },
+    {
+        "description": "Like Chase, but the 2 LEDs light up in rainbow colors and leave a primary color trail",
+        "id": "33",
+        "name": "Rainbow Runner"
+    },
+    {
+        "description": "Shifting Red-Amber-Green-Blue pattern",
+        "id": "34",
+        "name": "Colorful"
+    },
+    {
+        "description": "Emulates a traffic light",
+        "id": "35",
+        "name": "Traffic Light"
+    },
+    {
+        "description": "Like Sweep, but uses random colors",
+        "id": "36",
+        "name": "Sweep Random"
+    },
+    {
+        "description": "Pattern of n LEDs primary and n LEDs secondary moves along the strip",
+        "id": "37",
+        "name": "Chase 2"
+    },
+    {
+        "description": "Simulation of the Aurora Borealis",
+        "id": "38",
+        "name": "Aurora"
+    },
+    {
+        "description": "Flush bands random hues along the string",
+        "id": "39",
+        "name": "Stream"
+    },
+    {
+        "description": "Dot moves between ends, leaving behind a fading trail",
+        "id": "40",
+        "name": "Scanner"
+    },
+    {
+        "description": "Dot moves from start to end, leaving behind a fading trail",
+        "id": "41",
+        "name": "Lighthouse"
+    },
+    {
+        "description": "Random color blobs light up, then fade again",
+        "id": "42",
+        "name": "Fireworks"
+    },
+    {
+        "description": "Like Fireworks, but the blobs move",
+        "id": "43",
+        "name": "Rain"
+    },
+    {
+        "description": "Falling blocks stack",
+        "id": "44",
+        "name": "Tetrix"
+    },
+    {
+        "description": "LEDs randomly flickering",
+        "id": "45",
+        "name": "Fire Flicker"
+    },
+    {
+        "description": "Moves a saturation gradient of the primary color along the strip",
+        "id": "46",
+        "name": "Gradient"
+    },
+    {
+        "description": "Moves a sawtooth pattern along the strip",
+        "id": "47",
+        "name": "Loading"
+    },
+    {
+        "description": "A red and a blue dot running",
+        "id": "48",
+        "name": "RSVD"
+    },
+    {
+        "description": "Two areas, one red and one blue, sweeping",
+        "id": "49",
+        "name": "Fairy"
+    },
+    {
+        "description": "Like Police, but with custom colors",
+        "id": "50",
+        "name": "Two Dots"
+    },
+    {
+        "description": "Like Police All, but with custom colors",
+        "id": "51",
+        "name": "Fairytwinkle"
+    },
+    {
+        "description": "Sine waves in both directions",
+        "id": "52",
+        "name": "Running Dual"
+    },
+    {
+        "description": "Running 2, but always uses orange and purple",
+        "id": "53",
+        "name": "RSVD"
+    },
+    {
+        "description": "Like Chase, but with 3 colors",
+        "id": "54",
+        "name": "Chase 3"
+    },
+    {
+        "description": "Like Wipe but turns LEDs off as \"third color\"",
+        "id": "55",
+        "name": "Tri Wipe"
+    },
+    {
+        "description": "Fades the whole strip from primary color to secondary color to off",
+        "id": "56",
+        "name": "Tri Fade"
+    },
+    {
+        "description": "Short random white strobe similar to a lightning bolt",
+        "id": "57",
+        "name": "Lightning"
+    },
+    {
+        "description": "Two \"eyes\" running on opposite sides of the strip",
+        "id": "58",
+        "name": "ICU"
+    },
+    {
+        "description": "Like Scanner, but creates multiple trails",
+        "id": "59",
+        "name": "Multi Comet"
+    },
+    {
+        "description": "Like Scanner, but with two dots running on opposite sides",
+        "id": "60",
+        "name": "Scanner Dual"
+    },
+    {
+        "description": "Flush random hues along the string",
+        "id": "61",
+        "name": "Stream 2"
+    },
+    {
+        "description": "Areas of primary and secondary colors move between opposite ends, combining colors where they touch",
+        "id": "62",
+        "name": "Oscillate"
+    },
+    {
+        "description": "Rainbow cycling with brightness variation",
+        "id": "63",
+        "name": "Pride 2015"
+    },
+    {
+        "description": "Eight colored dots running, leaving trails",
+        "id": "64",
+        "name": "Juggle"
+    },
+    {
+        "description": "Running color palette",
+        "id": "65",
+        "name": "Palette"
+    },
+    {
+        "description": "Simulates flickering fire in red and yellow",
+        "id": "66",
+        "name": "Fire 2012"
+    },
+    {
+        "description": "Like Pride 2015, but uses palettes",
+        "id": "67",
+        "name": "Colorwaves"
+    },
+    {
+        "description": "Pulses moving back and forth on palette",
+        "id": "68",
+        "name": "Bpm"
+    },
+    {
+        "description": "Noise pattern",
+        "id": "69",
+        "name": "Fill Noise"
+    },
+    {
+        "description": "Fast Noise shift pattern",
+        "id": "70",
+        "name": "Noise 1"
+    },
+    {
+        "description": "Fast Noise shift pattern",
+        "id": "71",
+        "name": "Noise 2"
+    },
+    {
+        "description": "Noise shift pattern",
+        "id": "72",
+        "name": "Noise 3"
+    },
+    {
+        "description": "Noise sparkle pattern",
+        "id": "73",
+        "name": "Noise 4"
+    },
+    {
+        "description": "LEDs light up randomly in random colors and fade off again",
+        "id": "74",
+        "name": "Colortwinkles"
+    },
+    {
+        "description": "Calm palette waving",
+        "id": "75",
+        "name": "Lake"
+    },
+    {
+        "description": "The primary color creates a trail of randomly decaying color",
+        "id": "76",
+        "name": "Meteor"
+    },
+    {
+        "description": "Smoothly animated meteor",
+        "id": "77",
+        "name": "Meteor Smooth"
+    },
+    {
+        "description": "Shows primary and secondary color on alternating LEDs. All LEDs fade to their opposite color and back again",
+        "id": "78",
+        "name": "Railway"
+    },
+    {
+        "description": "Effect resembling random water ripples",
+        "id": "79",
+        "name": "Ripple"
+    },
+    {
+        "description": "FastLED gentle twinkling with slow fade in/out",
+        "id": "80",
+        "name": "Twinklefox"
+    },
+    {
+        "description": "Twinkling with fast in / slow out",
+        "id": "81",
+        "name": "Twinklecat"
+    },
+    {
+        "description": "One Pair of blinking eyes at random intervals along strip",
+        "id": "82",
+        "name": "Halloween Eyes"
+    },
+    {
+        "description": "Speed sets number of LEDs on, intensity sets off",
+        "id": "83",
+        "name": "Solid Pattern"
+    },
+    {
+        "description": "Solid Pattern with three colors",
+        "id": "84",
+        "name": "Solid Pattern Tri"
+    },
+    {
+        "description": "Solid lights with even distance",
+        "id": "85",
+        "name": "Spots"
+    },
+    {
+        "description": "Spots, getting bigger and smaller",
+        "id": "86",
+        "name": "Spots Fade"
+    },
+    {
+        "description": "Rainbow with white sparkles",
+        "id": "87",
+        "name": "Glitter"
+    },
+    {
+        "description": "Flicker resembling a candle flame",
+        "id": "88",
+        "name": "Candle"
+    },
+    {
+        "description": "Exploding multicolor fireworks",
+        "id": "89",
+        "name": "Fireworks Starburst"
+    },
+    {
+        "description": "one dimension fireworks with flare",
+        "id": "90",
+        "name": "Fireworks 1D"
+    },
+    {
+        "description": "Bouncing ball effect",
+        "id": "91",
+        "name": "Bouncing Balls"
+    },
+    {
+        "description": "Fastled sinusoidal moving eye",
+        "id": "92",
+        "name": "Sinelon"
+    },
+    {
+        "description": "Sinelon from both directions",
+        "id": "93",
+        "name": "Sinelon Dual"
+    },
+    {
+        "description": "Sinelon in rainbow colours",
+        "id": "94",
+        "name": "Sinelon Rainbow"
+    },
+    {
+        "description": "popping kernels",
+        "id": "95",
+        "name": "Popcorn"
+    },
+    {
+        "description": "Water dripping effect",
+        "id": "96",
+        "name": "Drip"
+    },
+    {
+        "description": "Plasma lamp",
+        "id": "97",
+        "name": "Plasma"
+    },
+    {
+        "description": "Lights up a percentage of segment",
+        "id": "98",
+        "name": "Percent"
+    },
+    {
+        "description": "Like ripple, but with a dimly lit changing background",
+        "id": "99",
+        "name": "Ripple Rainbow"
+    },
+    {
+        "description": "led strip pulsing rhythm similar to a heart beat",
+        "id": "100",
+        "name": "Heartbeat"
+    },
+    {
+        "description": "Gentle, blue-green ocean waves (one color palette currently)",
+        "id": "101",
+        "name": "Pacifica"
+    },
+    {
+        "description": "Like candle effect, but each LED has it's own flicker pattern",
+        "id": "102",
+        "name": "Candle Multi"
+    },
+    {
+        "description": "Like Glitter, but with solid color background",
+        "id": "103",
+        "name": "Solid Glitter"
+    },
+    {
+        "description": "Simulates a gradual sunrise or sunset. Speed sets: 0 - static sun, 1 - 60: sunrise time in minutes,60 - 120: sunset time in minutes - 60, above: \"breathing\" rise and set",
+        "id": "104",
+        "name": "Sunrise"
+    },
+    {
+        "description": "Sine waves (in sourcecode)",
+        "id": "105",
+        "name": "Phased"
+    },
+    {
+        "description": "Twinkle effect with fade-in",
+        "id": "106",
+        "name": "Twinkleup"
+    },
+    {
+        "description": "Peaceful noise that's slow and with gradually changing palettes",
+        "id": "107",
+        "name": "Noise Pal"
+    },
+    {
+        "description": "Controllable sine waves",
+        "id": "108",
+        "name": "Sine"
+    },
+    {
+        "description": "Noisy sine waves",
+        "id": "109",
+        "name": "Phased Noise"
+    },
+    {
+        "description": "Blend of palette and spot effects",
+        "id": "110",
+        "name": "Flow"
+    },
+    {
+        "description": "Birds flying in a circle formation",
+        "id": "111",
+        "name": "Chunchun"
+    },
+    {
+        "description": "Moving spotlights",
+        "id": "112",
+        "name": "Dancing Shadows"
+    },
+    {
+        "description": "Alternating direction (in source)",
+        "id": "113",
+        "name": "Washing Machine"
+    },
+    {
+        "description": "",
+        "id": "114",
+        "name": "RSVD"
+    },
+    {
+        "description": "Blends random colors across palette",
+        "id": "115",
+        "name": "Blends"
+    },
+    {
+        "description": "TV light spill simulation",
+        "id": "116",
+        "name": "TV Simulator"
+    },
+    {
+        "description": "Like Dynamic, but with smooth palette blends",
+        "id": "117",
+        "name": "Dynamic Smooth"
+    },
+    {
+        "description": "Circling ships with fading trails. Homage to 80s spaceship shooter games.",
+        "id": "118",
+        "name": "Spaceships"
+    },
+    {
+        "description": "Bees darting from flower to flower.",
+        "id": "119",
+        "name": "Crazy Bees"
+    },
+    {
+        "description": "Color changing ghost riding a kite... in a tornado.",
+        "id": "120",
+        "name": "Ghost Rider"
+    },
+    {
+        "description": "No really, they are blobs.",
+        "id": "121",
+        "name": "Blobs"
+    },
+    {
+        "description": "Edit segment name to set text",
+        "id": "122",
+        "name": "Scrolling Text"
+    },
+    {
+        "description": "Spinning arms that adds and removes nodes as it winds and unwinds.",
+        "id": "123",
+        "name": "Drift Rose"
+    },
+    {
+        "description": "Distorted sine waves with a psychodelic flair.",
+        "id": "124",
+        "name": "Distortion Waves"
+    },
+    {
+        "description": "",
+        "id": "125",
+        "name": "RSVD"
+    },
+    {
+        "description": "",
+        "id": "126",
+        "name": "RSVD"
+    },
+    {
+        "description": "",
+        "id": "127",
+        "name": "RSVD"
+    },
+    {
+        "description": "Random pixels.",
+        "id": "128",
+        "name": "Pixels"
+    },
+    {
+        "description": "Pixels emanating from center.",
+        "id": "129",
+        "name": "Pixelwave"
+    },
+    {
+        "description": "Juggling balls.",
+        "id": "130",
+        "name": "Juggles"
+    },
+    {
+        "description": "Similar to Matrix.",
+        "id": "131",
+        "name": "Matripix"
+    },
+    {
+        "description": "Volume reactive vu-meter with gravity and perlin noise.",
+        "id": "132",
+        "name": "Gravimeter"
+    },
+    {
+        "description": "Sine wave based plasma.",
+        "id": "133",
+        "name": "Plasmoid"
+    },
+    {
+        "description": "Blast coloured puddles based on volume.",
+        "id": "134",
+        "name": "Puddles"
+    },
+    {
+        "description": "Perlin noise emanating from center.",
+        "id": "135",
+        "name": "Midnoise"
+    },
+    {
+        "description": "Volume reactive vu-meter.",
+        "id": "136",
+        "name": "Noisemeter"
+    },
+    {
+        "description": "Maps the major frequencies from the incoming signal to colors in the HSV color space.",
+        "id": "137",
+        "name": "Freqwave"
+    },
+    {
+        "description": "The temporal tail for this animation starts at the beginning of the Segment rather than in the center of the segment.",
+        "id": "138",
+        "name": "Freqmatrix"
+    },
+    {
+        "description": "A 16x16 graphic equalizer.",
+        "id": "139",
+        "name": "GEQ"
+    },
+    {
+        "description": "A volume AND FFT version of a Waterfall that has 'beat' support.",
+        "id": "140",
+        "name": "Waterfall"
+    },
+    {
+        "description": "Random pixels coloured by frequency.",
+        "id": "141",
+        "name": "Freqpixels"
+    },
+    {
+        "description": "",
+        "id": "142",
+        "name": "RSVD"
+    },
+    {
+        "description": "A perlin noise based volume reactive fire routine.",
+        "id": "143",
+        "name": "Noisefire"
+    },
+    {
+        "description": "Blast coloured puddles randomly up and down the strand with the 'beat'.",
+        "id": "144",
+        "name": "Puddlepeak"
+    },
+    {
+        "description": "Using perlin noise as movement for different frequency bins.",
+        "id": "145",
+        "name": "Noisemove"
+    },
+    {
+        "description": "",
+        "id": "146",
+        "name": "Noise2D"
+    },
+    {
+        "description": "Using Perlin Noise for movement.",
+        "id": "147",
+        "name": "Perlin Move"
+    },
+    {
+        "description": "Peak detection triggers ripples.",
+        "id": "148",
+        "name": "Ripple Peak"
+    },
+    {
+        "description": "Using Perlin Noise for fire.",
+        "id": "149",
+        "name": "Firenoise"
+    },
+    {
+        "description": "Boxes moving around",
+        "id": "150",
+        "name": "Squared Swirl"
+    },
+    {
+        "description": "",
+        "id": "151",
+        "name": "RSVD"
+    },
+    {
+        "description": "A very cool DNA like pattern.",
+        "id": "152",
+        "name": "DNA"
+    },
+    {
+        "description": "The Matrix, on a 2D matrix.",
+        "id": "153",
+        "name": "Matrix"
+    },
+    {
+        "description": "A cool plasma type effect.",
+        "id": "154",
+        "name": "Metaballs"
+    },
+    {
+        "description": "Map the loudest frequency throughout the length of the LED's.",
+        "id": "155",
+        "name": "Freqmap"
+    },
+    {
+        "description": "Volume reactive vu-meter from center with gravity and perlin noise.",
+        "id": "156",
+        "name": "Gravcenter"
+    },
+    {
+        "description": "Volume reactive vu-meter from center with gravity. Volume provides index to (time rotating) palette colour.",
+        "id": "157",
+        "name": "Gravcentric"
+    },
+    {
+        "description": "VU Meter from center. Log of frequency is index to center colour.",
+        "id": "158",
+        "name": "Gravfreq"
+    },
+    {
+        "description": "An effect emanating from the center to the edges.",
+        "id": "159",
+        "name": "DJ Light"
+    },
+    {
+        "description": "A 2D wall of reactivity running from bottom to top",
+        "id": "160",
+        "name": "Funky Plank"
+    },
+    {
+        "description": "",
+        "id": "161",
+        "name": "RSVD"
+    },
+    {
+        "description": "Travelling waves.",
+        "id": "162",
+        "name": "Pulser"
+    },
+    {
+        "description": "Flash an fftResult bin per frame and then blur/fade.",
+        "id": "163",
+        "name": "Blurz"
+    },
+    {
+        "description": "A rotating kaleidoscope.",
+        "id": "164",
+        "name": "Drift"
+    },
+    {
+        "description": "Noise waves with some sound.",
+        "id": "165",
+        "name": "Waverly"
+    },
+    {
+        "description": "The sun! Doesn't support segments.",
+        "id": "166",
+        "name": "Sun Radiation"
+    },
+    {
+        "description": "Rotating rays of color.",
+        "id": "167",
+        "name": "Colored Bursts"
+    },
+    {
+        "description": "Animated Julia set fractal named after mathematician Gaston Julia.",
+        "id": "168",
+        "name": "Julia"
+    },
+    {
+        "description": "",
+        "id": "169",
+        "name": "RSVD"
+    },
+    {
+        "description": "",
+        "id": "170",
+        "name": "RSVD"
+    },
+    {
+        "description": "",
+        "id": "171",
+        "name": "RSVD"
+    },
+    {
+        "description": "Scrolling game of life.",
+        "id": "172",
+        "name": "Game Of Life"
+    },
+    {
+        "description": "Plaid pattern of horizontal and vertical bands. Makes a great kilt.",
+        "id": "173",
+        "name": "Tartan"
+    },
+    {
+        "description": "The northern lights.",
+        "id": "174",
+        "name": "Polar Lights"
+    },
+    {
+        "description": "Several blurred circles. Looks good with pink plasma palette. Supports AGC.",
+        "id": "175",
+        "name": "Swirl"
+    },
+    {
+        "description": "A frequency based Lissajous pattern.",
+        "id": "176",
+        "name": "Lissajous"
+    },
+    {
+        "description": "Moving patterns.",
+        "id": "177",
+        "name": "Frizzles"
+    },
+    {
+        "description": "A ball of plasma.",
+        "id": "178",
+        "name": "Plasma Ball"
+    },
+    {
+        "description": "Strip with rotating colours.",
+        "id": "179",
+        "name": "Flow Stripe"
+    },
+    {
+        "description": "A moving plasma.",
+        "id": "180",
+        "name": "Hiphotic"
+    },
+    {
+        "description": "Moving/rotating pattern.",
+        "id": "181",
+        "name": "Sindots"
+    },
+    {
+        "description": "Spiraling DNA pattern",
+        "id": "182",
+        "name": "DNA Spiral"
+    },
+    {
+        "description": "Colorful dots orbiting a white black hole.",
+        "id": "183",
+        "name": "Black Hole"
+    },
+    {
+        "description": "Beat waves and phase shifting. Looks OK in 2D'ish as well.",
+        "id": "184",
+        "name": "Wavesins"
+    },
+    {
+        "description": "Colours the same for each note between octaves, with sine wave going back and forth.",
+        "id": "185",
+        "name": "Rocktaves"
+    },
+    {
+        "description": "The WLED mascot rocking to your tunes.",
+        "id": "186",
+        "name": "Akemi"
+    }
+]

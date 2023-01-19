@@ -176,7 +176,7 @@ def render_effect(vis: Visualizer, fx):
         bg_color = '000000'
     else:
         bg_color = vis.col2
-    config = {'fx': fx, 'pal': pal, 'sx': 127, 'si': 127,
+    config = {'fx': fx, 'pal': vis.fp, 'sx': 127, 'si': 127,
               'col1': vis.col1, 'col2': bg_color,
               'col3': vis.col3, 'frames': 200,
               'bri_adj': 3.0}
@@ -228,7 +228,7 @@ def visualize_all(vis: Visualizer):
 
 
 if __name__ == '__main__':
-    node = wled.WledNode('192.168.10.154')
+    node = wled.WledNode('192.168.10.140')
     node.call({'transition': 0})
     vis = Visualizer(node, led_size=8)
     if node.is_2d:

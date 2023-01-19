@@ -117,13 +117,15 @@ class WledNode:
         data = req.json()
         self.ip = ip
         self.info = data['info']
-        self.load_state = data['state']
+        self.state = data['state']
         self.palettes = data['palettes']
         self.effects = data['effects']
         self.effect_info = []
         self.colors = []
         self.color_frames = []
-        self.ws = None
+        self.is_2d = 'startY' in self.state['seg'][self.state['mainseg']]
+        self.name = self.info['name']
+
         # Fetch and parse effect metadata if on 0.14 or greater
         if self.info['ver'] > '0.14':
             try:
@@ -144,26 +146,6 @@ class WledNode:
         else:
             req = requests.post(f'http://{self.ip}/json', data=data)
         return req
-
-    def on_message(self, ws, message):
-        data = json.loads(message)
-        state = data['state']
-        info = data['info']
-        if not state['on']:
-            print('LEDs are off')
-            return
-        seg = state['seg'][state['mainseg']]
-        is_rgbw = info['leds']['rgbw']
-        cols = []
-        for col in seg['col']:
-            if is_rgbw:
-                cv = (col[0] << 24) + (col[1] << 16) + (col[2] << 8) + col[3]
-                cols.append(f'#{cv:08X}')
-            else:
-                cv = (col[0] << 16) + (col[1] << 8) + col[2]
-                cols.append(f'#{cv:06X}')
-        print('Got ws message')
-        self.colors = cols
 
     def img_to_matrix(self, img_fn, aspect_mode=RESIZE_EXPAND):
         """

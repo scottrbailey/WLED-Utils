@@ -240,22 +240,22 @@
         "name": "Loading"
     },
     {
-        "description": "A red and a blue dot running",
+        "description": "",
         "id": "48",
         "name": "RSVD"
     },
     {
-        "description": "Two areas, one red and one blue, sweeping",
+        "description": "Inspired by twinkle style Christmas lights.",
         "id": "49",
         "name": "Fairy"
     },
     {
-        "description": "Like Police, but with custom colors",
+        "description": "Two areas sweeping",
         "id": "50",
         "name": "Two Dots"
     },
     {
-        "description": "Like Police All, but with custom colors",
+        "description": "Like Colortwinkle, but starting from all lit",
         "id": "51",
         "name": "Fairytwinkle"
     },
@@ -505,7 +505,7 @@
         "name": "Heartbeat"
     },
     {
-        "description": "Gentle, blue-green ocean waves (one color palette currently)",
+        "description": "Gentle ocean waves",
         "id": "101",
         "name": "Pacifica"
     },
@@ -565,7 +565,7 @@
         "name": "Dancing Shadows"
     },
     {
-        "description": "Alternating direction (in source)",
+        "description": "Spins, slows, reverses directions",
         "id": "113",
         "name": "Washing Machine"
     },
@@ -610,7 +610,7 @@
         "name": "Blobs"
     },
     {
-        "description": "Edit segment name to set text",
+        "description": "Edit segment name to set text (#DATE and #TIME to include those)",
         "id": "122",
         "name": "Scrolling Text"
     },
@@ -620,7 +620,7 @@
         "name": "Drift Rose"
     },
     {
-        "description": "Distorted sine waves with a psychodelic flair.",
+        "description": "Distorted sine waves with a psychedelic flair.",
         "id": "124",
         "name": "Distortion Waves"
     },
@@ -640,12 +640,12 @@
         "name": "RSVD"
     },
     {
-        "description": "Random pixels.",
+        "description": "Random pixels",
         "id": "128",
         "name": "Pixels"
     },
     {
-        "description": "Pixels emanating from center.",
+        "description": "Pixels emanating from center",
         "id": "129",
         "name": "Pixelwave"
     },
@@ -905,7 +905,7 @@
         "name": "Hiphotic"
     },
     {
-        "description": "Moving/rotating pattern.",
+        "description": "Dots revolving in a circle while the 'camera' ",
         "id": "181",
         "name": "Sindots"
     },

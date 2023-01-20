@@ -933,5 +933,10 @@
         "description": "The WLED mascot rocking to your tunes.",
         "id": "186",
         "name": "Akemi"
+    },
+    {
+        "description": "",
+        "id": 187,
+        "name": "Custom Effect"
     }
 ]

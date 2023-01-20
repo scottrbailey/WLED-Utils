@@ -15,5 +15,16 @@ Actual animation is done on a WLED device and captured from /json/live. You must
 * [Palettes](palettes.md)
 * [Sound Reactive Effects](effects_sr.md)
 
+### GIF visualizer 14
+Overhaul of GIF visualizer for WLED 0.14. The addition of 2D matrix, effect meta data, and a much larger
+liveview array (over websockets) allows for a much better visualization. 
+
+For rendering 1D effects, the connected node must be in 1D configuration and the number of LEDs configured
+should be 100. If you have more LEDs configured, even if they are not active on a segment, it will reduce
+the number of pixels lit in liveview.
+
+For rendering 2D effects, it is currently configured for a 24x24 matrix. If you want a larger or smaller matrix
+adjust the visualizer.led_size. 
+
 ### Preset Maker
 Pick your favorite palettes and effects then generate presets.json by combining your favorites. Work in progress.

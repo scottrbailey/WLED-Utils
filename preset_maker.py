@@ -1,15 +1,46 @@
 #!/usr/env python
 """
-Creates random presets for WLED
+Creates random presets for WLED based on your selection of favorite palettes and effects.
+
+
+
 """
 
 import copy
 import json
 import requests
 import random
+import sys
 import time
-from . import colors
+from . import color_utils
+from .wled import Node
 
+
+class WNode(Node):
+    def __init__(self, ip):
+        super().__init__(ip)
+        seg = self.state['seg'][self.state['mainseg']]
+        self.col1_pos = seg['start']
+        self.col2_pos = ((seg['start'] - seg['stop']) // 2) // (1 + self.info['leds']['count'] // 180)
+
+    def initialize(self):
+        # turn on and set transition time to 0
+        self.win(TT=0, T=1)
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self):
+        # set transition time and on back to original values
+        tt = self.state['transition']
+        t = 1 if self.state['on'] else 0
+        self.win(TT=tt, T=t)
+
+
+
+def grab_live_colors(fx):
+    req = requests.get(f'http://{ip}/json/live')
+    leds = req.json['leds']
 
 def find_fav_fx():
     fx_names = js['effects']
@@ -22,10 +53,10 @@ def find_fav_fx():
     if cont.upper() == 'Y':
         favs = []
         # be sure lights are on, set palette to Party and shorten transition time
-        hr = requests.get(f'{url}/win&TT=50&T=1&FP=6')
+        hr = requests.get(f'http://{ip}/win&TT=50&T=1&FP=6')
         
         for i in range(len(js['effects'])):
-            hr = requests.get(f'{url}/win&FX={i}')
+            hr = requests.get(f'http://{ip}/win&FX={i}')
             ans = input(f'Favorite {fx_names[i]}? 0: No, 1: Yes\t')
             if ans == '1':
                 favs.append(i)
@@ -39,29 +70,26 @@ def find_fav_pal():
     print(f"""This will cycle through {len(pal_names) - 4} palettes to determine if you want to use it to make a preset.
     If you like it, enter 1
     If you want to skip it, enter 0
-    If you want to quit at any time, enter Q.""")
+    If you want to quit at any time, enter Q. Favorites will not be saved.""")
     # turn lights on set effect to Palette
-    hr = requests.get(f'{url}/win&TT=50&T=1&FX=65')
-    favs = []
+    hr = requests.get(f'{ip}/win&TT=50&T=1&FX=65')
+    fav_pals = []
+    fav_pal_cols = {}
+
     for i in range(5, len(pal_names)):
-        hr = requests.get(f'{url}/win&FP={i}')
-        ans = input(f'Favorite {pal_names[i]}? 0: No, 1: Yes\t')
+        hr = requests.get(f'{ip}/win&FP={i}')
+        name = pal_names[i]
+        # Strip extra info from names in SR
+        ai = name.find('@')
+        if ai:
+            name = name[0:ai]
+        ans = input(f'Favorite {name}? 0: No, 1: Yes, Q: Quit\t')
         if ans == '1':
-            favs.append(i)
+            fav_pals.append(i)
+
         elif ans in ['Q', 'q']:
             return
-    return favs
-        
-
-
-def color_distance(c1, c2):
-    r1 = (c1 & 255 << 16) >> 16
-    r2 = (c2 & 255 << 16) >> 16
-    g1 = (c1 & 255 << 8) >> 8
-    g2 = (c2 & 255 << 8) >> 8
-    b1 = (c1 & 255)
-    b2 = (c2 & 255)
-    return math.sqrt((r1 - r2)**2 + (g1 - g2)**2 + (b1 - b2)**2)
+    return fav_pals
     
 
 def build_presets():
@@ -76,7 +104,7 @@ def build_presets():
     preset = {'n': 'Preset 2', 'on': True, 'bri': 128, 'transition': 7,
           'mainseg': 0, 'seg': []}
     segment_bounds = [(seg['start'], seg['stop']) for seg in js['state']['seg']]
-    for i in range(len(fav_fx)): #
+    for i in range(len(fav_fx)):
         pal_id = fav_pal[i % pal_len]
         fx_id = fav_fx[i]
         pal_name = js['palettes'][pal_id]
@@ -99,16 +127,21 @@ def build_presets():
     fp.close()
     print('done')
 
+
+def save_favs(favs):
+    with open('favorites.json', 'w') as fp:
+        json.dump(favs, fp, indent=2)
+
+
 if __name__ == '__main__':
-    url = 'http://192.168.10.55'
+    ip = '192.168.10.51'
     fav_pal = [38, 15, 46, 20, 51, 44, 29, 22, 42, 45, 49, 30, 27, 50,
                55, 12, 19, 11, 36, 28, 37, 6, 33, 41]
     fav_fx = [99, 72, 112, 110, 60, 64, 111, 73, 78, 87, 41, 101, 81, 71, 74,
               91, 79, 16, 109, 38, 67, 105, 89, 57, 80, 75, 70, 93, 106]
-    
-    req = requests.get(f'{url}/json')
-    js = req.json()
 
-        
-        
-        
+    with open('favorites.json') as fp:
+        favorites = json.load(fp)
+
+    node = WNode(ip)
+    js = {}

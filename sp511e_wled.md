@@ -8,11 +8,19 @@ and a microphone. Both the SP501E and SP511E controllers are quite capable, howe
 It has 180 dynamic effects, however they are mostly different color combinations of perhaps a dozen animations. 
 And before you can use the app, you have to register with your email.  
 
+#### Firmware
 To make better use of these controllers, we will be replacing the stock firmware with [WLED](https://github.com/Aircoookie/WLED).
 WLED is open source and features over 100 animations and 70 color palettes, a large number of interfaces and is very configurable.
 There is also a Sound Reactive fork of WLED. Because the FFT calculations require the additional processing power of the ESP32, the Sound Reactive
 WLED community focuses their efforts there. The EPS8266 version does not have 2D matrix support or FFT effects, but it does have
-over a dozen sound reactive animations in addition to all the effects in standard WLED. 
+over a dozen (volumetric) sound reactive animations in addition to all the effects in standard WLED. 
+The last Sound Reactive WLED version that supported ESP8266 chips was 0.13.0b-3.
+Since then, many of the features of the Sound Reactive fork have made their way to WLED 0.14. The WLED 0.14 version adds 2D support, numerous 2D effects and sound reactive effects (The effects will play but will use simulated noise instead of your microphone.)
+The main SR developers have committed to getting volumetric effects working on ESP8266s again. But for now, you have to choose between having a working microphone and having the latest version.
+- [WLED 0.13.3](https://github.com/scottrbailey/WLED-Utils/raw/gh-pages/firmware/WLED_0.13.3_sp511e.bin) 
+- [SoundReactive 0.13.0b-3](https://github.com/scottrbailey/WLED-Utils/raw/gh-pages/firmware/soundReactive_0.13.0-b3_sp511e.bin). 
+- [WLED 0.14.0b-2](https://github.com/srg74/WLED-wemos-shield/raw/master/resources/Firmware/%40Aircoookie/v0.14.0-b2/WLED_0.14.0-b2_SP511E_2m.bin)
+- Check if there is a more recent firmware on [Serg's repository](https://github.com/srg74/WLED-wemos-shield/tree/master/resources/Firmware/%40Aircoookie)
 
 ![SP511E Controller](media/sp511e_remote_controller.png)
 ![front](media/sp511e_front.jpg)
@@ -22,9 +30,8 @@ Getting set up for the first time can take some time.  But once you have flashed
 to perform over the air (OTA) updates.  Here is what you will need:
 - USB to TTL UART adapter. I'm using the CP2102 available from [Amazon](https://www.amazon.com/HiLetgo-CP2102-Converter-Adapter-Downloader/dp/B00LODGRV8/) or [AliExpress](https://www.aliexpress.com/item/4000516394932.htm).
 - Install the CP2102 [drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers).
-- A program to write to the ESP8266. Review the guide on [installing the WLED binary](https://kno.wled.ge/basics/install-binary/). I will be using esptool in this guide but ESP Home Flasher will work also.
-- A clip to attach the CP2102 to the RS232 pads on the bottom of the board, and Dupont wires to attach the clip to the CP2102 adapter. You can purchase [pogo pin clips](https://www.aliexpress.com/item/1005001409579446.html) designed for this (2.0mm single row 5 pin). We will be making our own later in this guide.
-- The firmware [WLED 0.13.3](https://github.com/scottrbailey/WLED-Utils/raw/gh-pages/firmware/WLED_0.13.3_sp511e.bin) or [SoundReactive 0.13.0b-3](https://github.com/scottrbailey/WLED-Utils/raw/gh-pages/firmware/soundReactive_0.13.0-b3_sp511e.bin). I will try to keep the SoundReactive updated when the SoundReactive team releases changes to the ESP8266 branch. However, there are continual updates to standard WLED. Check if there is a more recent firmware on [Serg's repository](https://github.com/srg74/WLED-wemos-shield/tree/master/resources/Firmware/WLED_wemos_shield/)
+- A program to write to the ESP8266. Review the guide on [installing the WLED binary](https://kno.wled.ge/basics/install-binary/). I will be using [esptool](https://github.com/espressif/esptool) in this guide but ESP Home Flasher will work also.
+- A clip to attach the CP2102 to the UART pads on the bottom of the board, and Dupont wires to attach the clip to the CP2102 adapter. You can purchase [pogo pin clips](https://www.aliexpress.com/item/1005001409579446.html) designed for this (2.0mm single row 5 pin). We will be making our own later in this guide.
 
 #### Building a Clip
 If you plan on flashing many of these controllers, I highly recommend purchasing the pogo pin clip. 
@@ -51,9 +58,9 @@ Now we are ready to program the board. If esptool detects multiple ports, it can
 We'll start by figuring out what port our CP2102 is on. Plug the CP2102 in to your USB port then
 open Device Manager. Expand the "Ports (COM & LPT)" section and note the port for the Silicone Labs CP210x device.
 Mine happens to be COM4. Now open a Power Shell or CMD window and change directory to where you downloaded the WLED firmware 
-to and type in the following command.  Be sure to replace COM4 with whatever your port is.  
+to and type in the following command.  Be sure to replace COM4 with whatever your port is and the correct name for your firmware.  
 
-`esptool.py -p COM4 write_flash 0x0 SP511E.bin`  
+`esptool.py -p COM4 write_flash 0x0 WLED_0.13.3_sp511e.bin`  
 
 If you have the pogo clip, and the SP511E is attached, you can hit enter right away. But if you are using the long-pin 
 headers that need held in place, type the command but do not hit enter. Unplug the CP2102 from your USB port, position the clip
@@ -61,12 +68,19 @@ over the pads, and plug the CP2102 back in. Hit Enter to execute the command you
 to write to flash. Once it completes and verifies, you will see a success message. You can disconnect the CP2102.
 
 #### Configuring
-Connect the controller to a 5-24v power supply and verify you see the WLED-AP wifi access point. If you see it, it succeeded
-and you can stuff it back in its enclosure and follow the [getting-started guide](https://kno.wled.ge/basics/getting-started/) 
+Connect the controller to a 5-24v power supply and verify you see the WLED-AP WiFi access point. If you see it, the firmware upload succeeded.
+You can stuff it back in its enclosure and follow the [getting-started guide](https://kno.wled.ge/basics/getting-started/) 
 to get it connected to your network and configured. 
 
-Once your basic setup is complete, go back to the "LED Settings" page.
-- Configure IR by selecting "JSON remote" as the remote type. The IR pin is 5, but should already be set for you. Once you select "JSON remote" a control will appear to upload the config.  Upload the 38-key config found [here](https://kno.wled.ge/interfaces/json-ir/json_infrared/).
-- Configure the two additional buttons. The power button (pin 2) is set as button 0 because its default behavior is to toggle off and on. Set button 1 to pin 13 ("M" button) and button 2 to 14 ("S" button). 
-- You will need to make presets for each button action to make the "M" button cycle through effects create on preset with API Command of `FX=~` and save to ID 100. Then make a second preset with `FX=~-` and save to 101. To cycle speed with the "S" button, you want to take bigger steps. The API commands would be `SX=~16` and `SX=~-16`.
-- Finally, you need to map your presets to the button action. Go to Config -> "Time & Macros" and set short press on button 1 to 100 and long press to 101. If you made presets for the "S" button, set them here as well.
+Once your basic setup is complete, go back to the "LED Preferences" page.
+- The LED GPIO will already be set (pin 3). Due to the pin the manufacturers chose, you will get memory warnings above 250 LEDs. 
+- The IR pin is 5, but should already be set for you.  onfigure IR by selecting "JSON remote" as the remote type. Once you select "JSON remote" a control will appear to upload the config.  Upload the 38-key config found [here](https://kno.wled.ge/interfaces/json-ir/json_infrared/).
+- Configure the two additional buttons. The power button (pin 2) is set as button 0 because its default behavior is to toggle off and on. Set button 1 to pin 13 ("M" button) and button 2 to 14 ("S" button).
+
+#### Create "Macro" Presets
+- You will need to make four presets to handle the short and long presses for the two remaining buttons. 
+- Go to the "Presets" tab and click the button to add a new preset. Uncheck the "Use current state" checkbox to get the API command text box.
+- We will make the "M" button cycle through effects with the API Command of `FX=~` saved to ID 100. To cycle in reverse, make a second preset with `FX=~-` and save to 101. 
+- We will make the "S" button to increase or decrease effect speed. The API commands would be `SX=~16` and `SX=~-16`. Save to ids 102 and 103.
+- Finally, you need to map your presets to the button action. Go to Config -> "Time & Macros" and set short press on button 1 to 100 and long press to 101. For button 2, set short press to 102 and long press to 103.
+- You can control almost aspect of WLED with API commands. Check out the documentation for [HTTP](https://kno.wled.ge/interfaces/http-api/) or [JSON](https://kno.wled.ge/interfaces/json-api/) API commands.

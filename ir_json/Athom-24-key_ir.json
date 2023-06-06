@@ -1,0 +1,132 @@
+{
+  "remote": "Athom-24-key",
+  "0xF740BF": {
+    "label": "On",
+    "pos": "1x1",
+    "cmd": "T=1"
+  },
+  "0xF7E01F": {
+    "label": "Timer60",
+    "pos": "1x2",
+    "cmd": "NL=60&NT=0"
+  },
+  "0xF7C03F": {
+    "label": "Off",
+    "pos": "1x3",
+    "cmd": "T=0&FX=0&FP=0&IX=128&SX=128"
+  },
+  "0xF7807F": {
+    "label": "Preset-",
+    "pos": "2x1",
+    "cmd": "PL=~-"
+  },
+  "0xF700FF": {
+    "label": "Preset+",
+    "pos": "2x2",
+    "cmd": "PL=~"
+  },
+  "0xF7D02F": {
+    "label": "Bright+",
+    "pos": "2x3",
+    "cmd": "!incBrightness"
+  },
+  "0xF720DF": {
+    "label": "Speed+",
+    "pos": "3x1",
+    "cmd": "SX=~16"
+  },
+  "0xF7A05F": {
+    "label": "Speed-",
+    "pos": "3x2",
+    "cmd": "SX=~-16"
+  },
+  "0xF7609F": {
+    "label": "Bright-",
+    "pos": "3x3",
+    "cmd": "!decBrightness"
+  },
+  "0xF710EF": {
+    "label": "Red",
+    "pos": "4x1",
+    "cmd": "FP=5&R=~16&CL=hFF0000&C2=hFF7F00&C3=hCC3D60"
+  },
+  "0xF7906F": {
+    "label": "Green",
+    "pos": "4x2",
+    "cmd": "FP=5&G=~16&CL=h008000&C2=h008040&C3=h30661E"
+  },
+  "0xF750AF": {
+    "label": "Blue",
+    "pos": "4x3",
+    "cmd": "FP=5&B=~16&CL=h0000FF&C2=h7F00FF&C3=h3D60CC"
+  },
+  "0xF730CF": {
+    "label": "Yellow",
+    "pos": "5x1",
+    "cmd": "FP=5&R=~-16&CL=hFFFF00&C2=h7FFF00&C3=hCCA83D"
+  },
+  "0xF7B04F": {
+    "label": "Magenta",
+    "pos": "5x2",
+    "cmd": "FP=5&G=~-16&CL=hFF00FF&C2=hFF007F&C3=hA83DCC"
+  },
+  "0xF7708F": {
+    "label": "Plumb",
+    "pos": "5x3",
+    "cmd": "FP=5&B=~-16"
+  },
+  "0xF708F7": {
+    "label": "Purple",
+    "pos": "6x1",
+    "cmd": "FP=5&CL=h800080&C2=h800040&C3=h541E66"
+  },
+  "0xF78877": {
+    "label": "Blue",
+    "pos": "6x2",
+    "cmnt": "Icefire",
+    "cmd": "FP=36&CL=h0000FF&C2=h7F00FF&C3=h3D60CC"
+  },
+  "0xF748B7": {
+    "label": "Green",
+    "pos": "6x3",
+    "cmnt": "Forest",
+    "cmd": "FP=10&CL=h008000&C2=h008040&C3=h30661E"
+  },
+  "0xF728D7": {
+    "label": "Palette-",
+    "pos": "7x1",
+    "cmd": "FP=~-"
+  },
+  "0xF7A857": {
+    "label": "White",
+    "pos": "7x2",
+    "cmd": "FP=5&CL=hFFFFFF&C2=hFFFFFF&C3=hCCCCCC"
+  },
+  "0xF76897": {
+    "label": "Palette+",
+    "pos": "7x3",
+    "cmd": "FP=~"
+  },
+  "0xF7F00F": {
+    "label": "DIY1",
+    "pos": "8x1",
+    "cmd": "!presetFallback",
+    "PL": 1,
+    "FX": 110,
+    "FP": 6
+  },
+  "0xF7C837": {
+    "label": "Lock",
+    "pos": "8x2",
+    "cmnt": "Set effect to solid",
+    "cmd": "FX=0"
+  },
+  "0xF7E817": {
+    "label": "DIY2",
+    "pos": "8x3",
+    "cmd": "!presetFallback",
+    "PL": 2,
+    "FX": 38,
+    "FP": 55
+  }
+}

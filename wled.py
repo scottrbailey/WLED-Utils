@@ -123,7 +123,8 @@ class WledNode:
         self.effect_info = []
         self.colors = []
         self.color_frames = []
-        self.is_2d = 'startY' in self.state['seg'][self.state['mainseg']]
+        self.mainseg = data['state']['seg'][data['state']['mainseg']]
+        self.is_2d = 'startY' in self.mainseg
         self.name = self.info['name']
 
         # Fetch and parse effect metadata if on 0.14 or greater
@@ -228,7 +229,7 @@ def compress_colors(colors, tolerance=8):
             if last_col_start + 1 == i:
                 col_out.extend([i - 1, f'{last_col:06X}'])
             else:
-                col_out.extend([last_col_start, i - 1, f'{last_col:06X}'])
+                col_out.extend([last_col_start, i, f'{last_col:06X}'])
             if i + 1 == col_cnt:
                 col_out.extend([i, f'{col:06X}'])
             else:
@@ -240,6 +241,7 @@ def compress_colors(colors, tolerance=8):
 def on_open(ws):
     ws.send({'state': {'on': 't', 'lv': 't'}})
     print("Websocket connection opened")
+
 
 def on_message(ws, message):
     state = json.loads(message)['state']

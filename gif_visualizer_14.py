@@ -1,9 +1,9 @@
 import wled
 import _thread
 import time
+import os
 import websocket
 from PIL import Image, ImageDraw, ImageEnhance
-
 
 
 class Visualizer:
@@ -14,6 +14,9 @@ class Visualizer:
         self.bri_adj = 3.0
         self.cols_1d = 25
         self.rows_1d = 4
+        if node.is_2d:
+            self.cols_2d = node.mainseg['stop'] - node.mainseg['start']
+            self.rows_2d = node.mainseg['stopY'] - node.mainseg['startY']
         # array of liveview data
         self.messages = []
         # rendered gif frames
@@ -108,15 +111,18 @@ class Visualizer:
     def _render_2d_frame(self, message):
         cols = message[2]
         rows = message[3]
+
+        box = (self.node.mainseg['start'], self.node.mainseg['startY'],
+               self.node.mainseg['stop'], self.node.mainseg['stopY'])
         thumb = Image.frombytes('RGB', (cols, rows), message[4:])
         thumb = thumb.convert('RGBA')
         if self.bri_adj != 1.0:
             bright = ImageEnhance.Brightness(thumb)
             thumb = bright.enhance(self.bri_adj)
-        img = thumb.resize((cols * self.led_size, rows * self.led_size),
-                           resample=Image.BOX)
+        img = thumb.resize((self.cols_2d * self.led_size, self.rows_2d * self.led_size),
+                           resample=Image.BOX, box=box)
         if self.grid_2d is None:
-            self.grid_2d = self._generate_grid(cols, rows)
+            self.grid_2d = self._generate_grid(self.cols_2d, self.rows_2d)
         return Image.alpha_composite(img, self.grid_2d)
 
     def render_frames(self):
@@ -213,22 +219,24 @@ def make_compare_file(node: wled.WledNode):
                 fp.write(line)
 
 
-def visualize_all(vis: Visualizer):
+def visualize_all(vis: Visualizer, skip_existing=False):
     """ Render all effects that match node's configuration (1d or 2d) """
     for i in range(len(node.effects)):
         effect = node.effect_info[i]
         if effect.name == 'RSVD':
             continue
+        if skip_existing and os.path.exists(f'images/FX_{i:03d}.gif'):
+            continue
         if node.is_2d and effect.is_2d:
             if i in vis.overrides:
-                render_effect(vis, i, 6)
+                render_effect(vis, i)
         elif not node.is_2d and not effect.is_2d:
             if effect.is_fft:
-                render_effect(vis, i, 6)
+                render_effect(vis, i)
 
 
 if __name__ == '__main__':
-    node = wled.WledNode('192.168.10.140')
+    node = wled.WledNode('192.168.10.56')
     node.call({'transition': 0})
     vis = Visualizer(node, led_size=8)
     if node.is_2d:

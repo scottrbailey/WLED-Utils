@@ -16,7 +16,8 @@ def make_effect_md(node:WledNode):
         effect = node.effects[fx]
         effect_info = effect_desc[fx]
         if effect != effect_info['name']:
-            raise Exception(f"Effect name has changed from {effect_info['name']} to {effect}.")
+            msg = f"Effect {fx} name has changed from {effect_info['name']} to {effect}."
+            raise Exception(msg)
 
     with open('effects.md', 'w', encoding='utf8') as fp:
         fp.write(dedent('''\
@@ -48,7 +49,7 @@ def make_effect_md(node:WledNode):
             else:
                 img = ''
             line = f'| {i} | {node.effects[i]} | {desc} <br /> {img} |  {effect_info.print_flags()} '
-            line += f'| {effect_info.print_colors} | {effect_info.print_parameters()}\n'
+            line += f'| {effect_info.print_colors()} | {effect_info.print_parameters()}\n'
             fp.write(line)
         print('Updated effects.md')
 
@@ -59,7 +60,8 @@ def make_pallete_md(node:WledNode):
     for i in range(len(node.palettes)):
         name = palette_desc[i]['name']
         if node.palettes[i].replace('* ', '') != name:
-            raise Exception(f"The palette {i} name has changed from {name} to {node.palettes[i]}.")
+            msg = f'Palette {i} name has changed from {name} to {node.palettes[i]}.'
+            raise Exception(msg)
     with open('palettes.md', 'w') as fp:
         fp.write(dedent('''\
         ### Palettes
@@ -75,6 +77,6 @@ def make_pallete_md(node:WledNode):
 
 
 if __name__ == '__main__':
-    node = WledNode('192.168.10.154')
+    node = WledNode('192.168.10.56')
     make_effect_md(node)
     make_pallete_md(node)

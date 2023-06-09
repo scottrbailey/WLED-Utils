@@ -625,19 +625,19 @@
         "name": "Distortion Waves"
     },
     {
-        "description": "",
+        "description": "Like soap bubbles, but lasts longer.",
         "id": "125",
-        "name": "RSVD"
+        "name": "Soap"
     },
     {
-        "description": "",
+        "description": "A cephalopod stuck in a whirlpool.",
         "id": "126",
-        "name": "RSVD"
+        "name": "Octopus"
     },
     {
-        "description": "",
+        "description": "If a bunch of eucaryotes went to a sports stadium and did the wave, it would look exactly like this.",
         "id": "127",
-        "name": "RSVD"
+        "name": "Waving Cell"
     },
     {
         "description": "Random pixels",

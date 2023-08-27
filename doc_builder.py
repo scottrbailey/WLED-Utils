@@ -8,18 +8,20 @@ from textwrap import dedent
 from wled import WledNode
 
 
-def make_effect_md(node:WledNode):
+def make_effect_md(node:WledNode, outfn=None, skip_validation=False):
     with open('effect_descriptions.json') as ed:
         effect_desc = json.load(ed)
     # verify effects haven't changed
-    for fx in range(len(node.effects)):
-        effect = node.effects[fx]
-        effect_info = effect_desc[fx]
-        if effect != effect_info['name']:
-            msg = f"Effect {fx} name has changed from {effect_info['name']} to {effect}."
-            raise Exception(msg)
-
-    with open('effects.md', 'w', encoding='utf8') as fp:
+    if not skip_validation:
+        for fx in range(len(node.effects)):
+            effect = node.effects[fx]
+            effect_info = effect_desc[fx]
+            if effect != effect_info['name']:
+                msg = f"Effect {fx} name has changed from {effect_info['name']} to {effect}."
+                raise Exception(msg)
+    if outfn is None:
+        outfn = 'effects.md'
+    with open(outfn, 'w', encoding='utf8') as fp:
         fp.write(dedent('''\
         ### Effects
         
@@ -31,27 +33,31 @@ def make_effect_md(node:WledNode):
         ![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/color_3.gif) tertiary _Cs.<br />
         For 2D effects the background (secondary) color is set to black.
 
-        | ID | Effect | Description | Flags | Colors | Parms
-        | ---: | --- | --- | --- | --- | --- 
+        |  ID | Effect                   | Description                                                                                    | Flags | Colors                                  | Parms                                                                         |
+        |----:|--------------------------|------------------------------------------------------------------------------------------------|-------|-----------------------------------------|-------------------------------------------------------------------------------|
         '''))
-        for i in range(len(node.effects)):
-            if node.effects[i] == 'RSVD':
+        for name in sorted(node.effects):
+            if name == 'RSVD':
                 continue
-            if node.effects[i] != effect_desc[i]['name']:
-                print(f'Warning, the name of effect {i} has changed to {node.effects[i]}.')
-                print('Update effect_descriptions.json')
-                continue
-            effect_info = node.effect_info[i]
-            desc = effect_desc[i]["description"]
-            img_fn = f'gifs/FX_{i:03d}.gif'
+            idx = node.effects.index(name)
+            effect_info = node.effect_info[idx]
+            if idx < len(effect_desc) and name == effect_desc[idx]["name"]:
+                desc = effect_desc[idx]["description"]
+            else:
+                desc = ''
+            if '☾' in name:
+                img_fn = f'gifs/FX_MM{idx:03d}.gif'
+            else:
+                img_fn = f'gifs/FX_{idx:03d}.gif'
             if os.path.exists(img_fn):
-                img = f'![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/FX_{i:03d}.gif)'
+                # img = f'![]({img_fn})'
+                img = f'![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/{img_fn})'
             else:
                 img = ''
-            line = f'| {i} | {node.effects[i]} | {desc} <br /> {img} |  {effect_info.print_flags()} '
-            line += f'| {effect_info.print_colors()} | {effect_info.print_parameters()}\n'
+            line = f'| {idx:3} | {node.effects[idx]:26} | {desc} <br /> {img} |  {effect_info.print_flags()} '
+            line += f'| {effect_info.print_colors()} | {effect_info.print_parameters():30} |\n'
             fp.write(line)
-        print('Updated effects.md')
+        print(f'Updated {outfn}')
 
 
 def make_pallete_md(node:WledNode):
@@ -66,17 +72,19 @@ def make_pallete_md(node:WledNode):
         fp.write(dedent('''\
         ### Palettes
         
-        | ID | Name | Description
-        | ---: | --- | ---
+        |  ID | Name           | Description                                                                                                                                                                                           |
+        |----:|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
         '''))
         for i in range(len(node.palettes)):
             pal_info = palette_desc[i]
             img = f'![](https://raw.githubusercontent.com/scottrbailey/WLED-Utils/master/gifs/PAL_{i:02d}.gif)'
-            fp.write(f"| {i} | {pal_info['name']} | {pal_info['description']}<br />{img}\n")
+            fp.write(f"| {i} | {pal_info['name']} | {pal_info['description']}<br />{img} |\n")
     print('Updated palettes.md')
 
 
 if __name__ == '__main__':
-    node = WledNode('192.168.10.56')
-    make_effect_md(node)
-    make_pallete_md(node)
+    node = WledNode('192.168.10.140')
+    # Need to skip validation of effect name when building MM effect.md page
+    make_effect_md(node, 'effects_mm.md', True)
+    #make_effect_md(node)
+    #make_pallete_md(node)

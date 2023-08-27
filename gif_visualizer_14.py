@@ -1,3 +1,9 @@
+"""
+Generates gif previews of effects and palettes.
+
+2D
+"""
+
 import wled
 import _thread
 import time
@@ -174,7 +180,7 @@ def on_close(ws):
     ws.thread.join()
 
 
-def render_effect(vis: Visualizer, fx):
+def render_effect(vis: Visualizer, fx, filename=None):
     vis.reset()
     vis.fx = fx
     effect = vis.node.effect_info[fx]
@@ -203,7 +209,9 @@ def render_effect(vis: Visualizer, fx):
                                      on_close=on_close)
     ws.run_forever()
     vis.render_frames()
-    vis.save_gif(f'images/FX_{fx:03d}.gif')
+    if filename is None:
+        filename = f'images/FX_{fx:03d}.gif'
+    vis.save_gif(filename)
 
 
 def make_compare_file(node: wled.WledNode):
@@ -227,21 +235,35 @@ def visualize_all(vis: Visualizer, skip_existing=False):
             continue
         if skip_existing and os.path.exists(f'images/FX_{i:03d}.gif'):
             continue
-        if node.is_2d and effect.is_2d:
-            if i in vis.overrides:
-                render_effect(vis, i)
-        elif not node.is_2d and not effect.is_2d:
-            if effect.is_fft:
-                render_effect(vis, i)
+        if node.is_2d == effect.is_2d:
+            render_effect(vis, i)
+
+
+def visualize_mm(vis: Visualizer, skip_existing=False):
+    for i in range(len(vis.node.effects)):
+        effect = vis.node.effect_info[i]
+        if effect.name == 'RSVD':
+            continue
+        if effect.is_2d != vis.node.is_2d:
+            # wrong configuration to render effect
+            continue
+        if '☾' in effect.name:
+            fn = f'images/FX_MM{i:03d}.gif'
+        else:
+            fn = f'images/FX_{i:03d}.gif'
+        if skip_existing and os.path.exists(fn):
+            continue
+        render_effect(vis, i, fn)
+    print('Finished')
 
 
 if __name__ == '__main__':
-    node = wled.WledNode('192.168.10.56')
+    node = wled.WledNode('192.168.10.140')
     node.call({'transition': 0})
     vis = Visualizer(node, led_size=8)
     if node.is_2d:
         vis.led_size = 5
 
-    # make_compare_file(node)
-    # visualize_all(vis)
+    make_compare_file(node)
+    visualize_all(vis)
 
